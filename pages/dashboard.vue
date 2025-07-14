@@ -2,7 +2,8 @@
 import { useHead } from '#app';
 import QRCode from 'qrcode';
 import { onMounted, ref } from 'vue';
-import QRCodeGrid from '~/components/QRCodeGrid.vue';
+import AnalyticsSection from '~/components/AnalyticsSection.vue';
+import CampaignsSection from '~/components/CampaignsSection.vue';
 import type { Database } from '~/types/supabase';
 
 definePageMeta({
@@ -367,7 +368,7 @@ function handleShareQRCode(id: number) {
                         class="bg-white border border-gray-200 overflow-y-auto rounded-3xl p-4 h-full">
                         <div class="mb-8" v-if="user && user.user_metadata">
                             <h1 class="text-3xl font-bold text-gray-900 mb-2">Bienvenue {{ user.user_metadata.first_name
-                                }}
+                            }}
                             </h1>
                             <p class="text-gray-600">Découvrez le meilleur de QRMaster, en ligne</p>
                         </div>
@@ -437,84 +438,21 @@ function handleShareQRCode(id: number) {
                             </button>
                         </div>
 
-                        <QRCodeGrid v-else :qrcodes="qrcodes" :campaigns="campaigns" @edit="handleEditQRCode"
+                        <QRCodeSection v-else :qrcodes="qrcodes" :campaigns="campaigns" @edit="handleEditQRCode"
                             @delete="handleDeleteQRCode" @share="handleShareQRCode" />
                     </div>
 
                     <div v-else-if="activeSection === 'campaigns'">
-                        <div class="flex justify-between items-center mb-6">
-                            <h1 class="text-3xl font-bold text-gray-900">Campagnes</h1>
-                            <button @click="showCreateCampaignModal = true"
-                                class="bg-yellow-400 hover:bg-yellow-500 text-gray-800 px-6 py-3 rounded-lg font-medium flex items-center gap-2">
-                                <Icon name="heroicons:plus" class="w-5 h-5" />
-                                Nouvelle campagne
-                            </button>
-                        </div>
+                        <CampaignsSection :campaigns="campaigns" :qrcodes="qrcodes" :loadingCampaigns="loadingCampaigns"
+                            :showCreateCampaignModal="showCreateCampaignModal" :newCampaignData="newCampaignData"
+                            :isCreatingCampaign="isCreatingCampaign"
+                            @update:showCreateCampaignModal="showCreateCampaignModal = $event"
+                            @update:newCampaignData="newCampaignData = $event" @createCampaign="handleCreateCampaign"
+                            @resetCampaignModal="resetCampaignModal" />
+                    </div>
 
-                        <div v-if="loadingCampaigns" class="text-center text-gray-500">
-                            Chargement des campagnes...
-                        </div>
-
-                        <div v-else-if="campaigns.length === 0"
-                            class="bg-white rounded-lg border border-gray-200 p-8 text-center">
-                            <Icon name="heroicons:megaphone" class="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune campagne créée</h3>
-                            <p class="text-gray-600 mb-6">Créez votre première campagne pour organiser vos QR codes</p>
-                            <button @click="showCreateCampaignModal = true"
-                                class="bg-yellow-400 hover:bg-yellow-500 text-gray-800 px-6 py-3 rounded-lg font-medium">
-                                Créer ma première campagne
-                            </button>
-                        </div>
-
-                        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div v-for="campaign in campaigns" :key="campaign.id"
-                                class="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-200">
-                                <div class="flex items-start justify-between mb-4">
-                                    <div class="flex-1">
-                                        <h3 class="font-bold text-lg text-gray-900">{{ campaign.name }}</h3>
-                                        <p v-if="campaign.description" class="text-sm text-gray-500 mt-1">{{
-                                            campaign.description }}</p>
-                                    </div>
-                                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full" :class="{
-                                        'bg-green-100 text-green-800': campaign.status === 'active',
-                                        'bg-yellow-100 text-yellow-800': campaign.status === 'paused',
-                                        'bg-gray-100 text-gray-800': campaign.status === 'archived'
-                                    }">
-                                        <span v-if="campaign.status === 'active'">Active</span>
-                                        <span v-else-if="campaign.status === 'paused'">En pause</span>
-                                        <span v-else>Archivée</span>
-                                    </span>
-                                </div>
-
-                                <div class="space-y-2 text-sm text-gray-600 mb-4">
-                                    <div v-if="campaign.start_date" class="flex items-center gap-2">
-                                        <Icon name="heroicons:calendar" class="w-4 h-4" />
-                                        Début: {{ new Date(campaign.start_date).toLocaleDateString() }}
-                                    </div>
-                                    <div v-if="campaign.end_date" class="flex items-center gap-2">
-                                        <Icon name="heroicons:calendar" class="w-4 h-4" />
-                                        Fin: {{ new Date(campaign.end_date).toLocaleDateString() }}
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <Icon name="heroicons:qr-code" class="w-4 h-4" />
-                                        {{ getQRCodeCountForCampaign(campaign.id) }} QR codes
-                                    </div>
-                                </div>
-
-                                <div class="flex gap-2">
-                                    <button
-                                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-colors">
-                                        <Icon name="heroicons:chart-bar" class="w-4 h-4" />
-                                        Analytics
-                                    </button>
-                                    <button
-                                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-colors">
-                                        <Icon name="heroicons:pencil" class="w-4 h-4" />
-                                        Modifier
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                    <div v-else-if="activeSection === 'analytics'">
+                        <AnalyticsSection :qrcodes="qrcodes" :campaigns="campaigns" />
                     </div>
 
                     <div v-else>
@@ -584,68 +522,7 @@ function handleShareQRCode(id: number) {
                 </template>
             </UModal>
 
-            <!-- Modal de création de campagne -->
-            <UModal v-model:open="showCreateCampaignModal" :ui="{ wrapper: 'z-50' }">
-                <template #header>
-                    <div class="text-xl font-bold text-gray-900">Créer une campagne</div>
-                </template>
 
-                <template #body>
-                    <form @submit.prevent="handleCreateCampaign" class="space-y-4">
-                        <div>
-                            <label for="campaign-name" class="block text-sm font-medium text-gray-700 mb-1">
-                                Nom de la campagne
-                            </label>
-                            <UInput id="campaign-name" v-model="newCampaignData.name"
-                                placeholder="Ma campagne marketing" required />
-                        </div>
-
-                        <div>
-                            <label for="campaign-description" class="block text-sm font-medium text-gray-700 mb-1">
-                                Description (optionnel)
-                            </label>
-                            <UTextarea id="campaign-description" v-model="newCampaignData.description"
-                                placeholder="Description de la campagne..." />
-                        </div>
-
-                        <div>
-                            <label for="campaign-status" class="block text-sm font-medium text-gray-700 mb-1">
-                                Statut
-                            </label>
-                            <USelect id="campaign-status" v-model="newCampaignData.status" :items="[
-                                { label: 'Active', value: 'active' },
-                                { label: 'En pause', value: 'paused' },
-                                { label: 'Archivée', value: 'archived' }
-                            ]" />
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label for="campaign-start" class="block text-sm font-medium text-gray-700 mb-1">
-                                    Date de début (optionnel)
-                                </label>
-                                <input type="date" id="campaign-start" v-model="newCampaignData.start_date"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent" />
-                            </div>
-                            <div>
-                                <label for="campaign-end" class="block text-sm font-medium text-gray-700 mb-1">
-                                    Date de fin (optionnel)
-                                </label>
-                                <input type="date" id="campaign-end" v-model="newCampaignData.end_date"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent" />
-                            </div>
-                        </div>
-                    </form>
-                </template>
-
-                <template #footer>
-                    <div class="flex justify-end gap-3">
-                        <UButton color="neutral" variant="soft" label="Annuler" @click="resetCampaignModal" />
-                        <UButton color="primary" :loading="isCreatingCampaign" :disabled="isCreatingCampaign"
-                            :label="isCreatingCampaign ? 'Création...' : 'Créer'" @click="handleCreateCampaign" />
-                    </div>
-                </template>
-            </UModal>
         </div>
     </div>
 </template>
