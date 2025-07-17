@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "NODE_OPTIONS='--no-deprecation' nuxt dev",
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
@@ -37,9 +37,11 @@
   "devDependencies": {
     "@iconify-json/heroicons": "^1.2.2",
     "@iconify-json/lucide": "^1.2.57",
+    "@iconify-json/mdi": "^1.2.3",
     "@nuxtjs/supabase": "^1.5.3",
     "@types/qrcode": "^1.5.5",
     "@types/uuid": "^10.0.0",
+    "cross-env": "^7.0.3",
     "supabase": "^2.30.4",
     "typescript": "^5.8.3",
     "vue-tsc": "^2.2.10"

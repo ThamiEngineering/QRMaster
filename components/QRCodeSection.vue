@@ -2,6 +2,9 @@
 import QRCode from 'qrcode';
 import { onMounted, ref, watch } from 'vue';
 import type { Database } from '~/types/supabase';
+import QRCodeShareModal from '~/components/Modal/QRCodeShareModal.vue';
+import QRCodeEditModal from '~/components/Modal/QRCodeEditModal.vue';
+import QRCodeDeleteModal from '~/components/Modal/QRCodeDeleteModal.vue';
 
 type QRCodeType = Database['public']['Tables']['qrcodes']['Row']
 type QRCodeWithImage = QRCodeType & { qr_code_image?: string };
@@ -26,13 +29,6 @@ const isEditing = ref(false)
 const isDeleting = ref(false)
 const toast = useToast()
 
-const editForm = ref({
-    name: '',
-    type: 'statique' as 'statique' | 'dynamique',
-    content: '',
-    campaign_id: null as number | null
-})
-
 const generateQrCodeImages = async () => {
     const promises = props.qrcodes.map(async (qr) => {
         if (!qr.content) {
@@ -56,12 +52,6 @@ const openShareModal = (qr: QRCodeWithImage) => {
 
 const openEditModal = (qr: QRCodeWithImage) => {
     selectedQR.value = qr;
-    editForm.value = {
-        name: qr.name || '',
-        type: (qr.type as 'statique' | 'dynamique') || 'statique',
-        content: qr.content || '',
-        campaign_id: qr.campaign_id || null
-    };
     showEditModal.value = true;
 }
 
@@ -147,7 +137,7 @@ const downloadQRCode = () => {
     })
 }
 
-const handleEditQRCode = async () => {
+const handleEditQRCode = async (formData: { name: string, type: string, content: string, campaign_id: number | null }) => {
     if (!selectedQR.value) return;
 
     isEditing.value = true;
@@ -156,10 +146,10 @@ const handleEditQRCode = async () => {
         const { data, error } = await supabase
             .from('qrcodes')
             .update({
-                name: editForm.value.name,
-                type: editForm.value.type,
-                content: editForm.value.content,
-                campaign_id: editForm.value.campaign_id
+                name: formData.name,
+                type: formData.type,
+                content: formData.content,
+                campaign_id: formData.campaign_id
             })
             .eq('id', selectedQR.value.id)
             .select();
@@ -168,15 +158,15 @@ const handleEditQRCode = async () => {
 
         const updatedQR = {
             ...selectedQR.value,
-            name: editForm.value.name,
-            type: editForm.value.type,
-            content: editForm.value.content,
-            campaign_id: editForm.value.campaign_id
+            name: formData.name,
+            type: formData.type,
+            content: formData.content,
+            campaign_id: formData.campaign_id
         };
 
-        if (editForm.value.content !== selectedQR.value.content) {
+        if (formData.content !== selectedQR.value.content) {
             try {
-                updatedQR.qr_code_image = await QRCode.toDataURL(editForm.value.content, { width: 128, margin: 1 });
+                updatedQR.qr_code_image = await QRCode.toDataURL(formData.content, { width: 128, margin: 1 });
             } catch (err) {
                 console.error('Failed to generate new QR code image:', err);
             }
@@ -189,7 +179,7 @@ const handleEditQRCode = async () => {
 
         toast.add({
             title: 'QR Code modifié avec succès !',
-            description: `Le QR code "${editForm.value.name}" a été mis à jour.`,
+            description: `Le QR code "${formData.name}" a été mis à jour.`,
             color: 'success',
             icon: 'i-heroicons-pencil-square'
         })
@@ -217,13 +207,7 @@ watch(() => props.qrcodes, generateQrCodeImages, { deep: true });
     <div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <div v-for="qr in qrcodesWithImages" :key="qr.id"
-                class="bg-white rounded-2xl border border-gray-200 p-5 flex flex-col hover:shadow-lg transition-all duration-200 relative">
-
-                <button @click="handleDeleteQRCode(qr)"
-                    class="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
-                    title="Supprimer ce QR code">
-                    <Icon name="heroicons:trash" class="w-4 h-4" />
-                </button>
+                class="bg-white rounded-2xl border border-gray-200 p-5 flex flex-col hover:shadow-lg transition-all duration-200">
 
                 <div class="bg-gray-100 rounded-lg mb-4 flex items-center justify-center p-4">
                     <img v-if="qr.qr_code_image" :src="qr.qr_code_image" alt="QR Code" class="w-24 h-24" />
@@ -276,111 +260,40 @@ watch(() => props.qrcodes, generateQrCodeImages, { deep: true });
                             <Icon name="heroicons:pencil" class="w-3 h-3" />
                             <span class="hidden sm:inline">Modifier</span>
                         </button>
+                        <button @click="handleDeleteQRCode(qr)"
+                            class="flex-1 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium py-2 px-2 rounded-lg flex items-center justify-center gap-1 transition-colors">
+                            <Icon name="heroicons:trash" class="w-3 h-3" />
+                            <span class="hidden sm:inline">Supprimer</span>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <UModal v-model:open="showShareModal" :ui="{ wrapper: 'z-50' }">
-            <template #header>
-                <div class="text-xl font-bold text-gray-900">Partager le QR code</div>
-            </template>
+        <QRCodeShareModal
+            :is-open="showShareModal"
+            :selected-q-r="selectedQR"
+            :qr-code-image="selectedQR?.qr_code_image || null"
+            @update:is-open="showShareModal = $event"
+            @copy-to-clipboard="copyToClipboard"
+            @download-q-r-code="downloadQRCode"
+        />
 
-            <template #body>
-                <div class="space-y-4">
-                    <div v-if="selectedQR" class="flex justify-center">
-                        <img :src="selectedQR.qr_code_image" alt="QR Code" class="w-48 h-48" />
-                    </div>
-                    <div class="space-y-2">
-                        <p class="text-sm text-gray-600">Partagez ce QR code via :</p>
-                        <div class="flex gap-2">
-                            <UButton color="primary" variant="soft" icon="i-heroicons-link" label="Copier le lien"
-                                @click="copyToClipboard(selectedQR?.content)" />
-                            <UButton color="primary" variant="soft" icon="i-heroicons-arrow-down-tray"
-                                label="Télécharger" @click="downloadQRCode" />
-                        </div>
-                    </div>
-                </div>
-            </template>
-        </UModal>
+        <QRCodeEditModal
+            :is-open="showEditModal"
+            :selected-q-r="selectedQR"
+            :campaigns="campaigns || []"
+            :is-editing="isEditing"
+            @update:is-open="showEditModal = $event"
+            @edit="handleEditQRCode"
+        />
 
-        <UModal v-model:open="showEditModal" :ui="{ wrapper: 'z-50' }">
-            <template #header>
-                <div class="text-xl font-bold text-gray-900">Modifier le QR code</div>
-            </template>
-
-            <template #body>
-                <form @submit.prevent="handleEditQRCode" class="space-y-4">
-                    <div>
-                        <label for="edit-name" class="block text-sm font-medium text-gray-700 mb-1">
-                            Nom du QR code
-                        </label>
-                        <UInput id="edit-name" v-model="editForm.name" placeholder="Mon QR code" required />
-                    </div>
-
-                    <div>
-                        <label for="edit-campaign" class="block text-sm font-medium text-gray-700 mb-1">
-                            Campagne (optionnel)
-                        </label>
-                        <USelect id="edit-campaign" v-model="editForm.campaign_id" :items="[
-                            { label: 'Aucune campagne', value: null },
-                            ...(campaigns?.map(c => ({ label: c.name, value: c.id })) || [])
-                        ]" placeholder="Sélectionnez une campagne" />
-                    </div>
-
-                    <div>
-                        <label for="edit-type" class="block text-sm font-medium text-gray-700 mb-1">
-                            Type de QR code
-                        </label>
-                        <USelect id="edit-type" v-model="editForm.type" :items="[
-                            { label: 'Statique', value: 'statique', icon: 'i-heroicons-qr-code' },
-                            { label: 'Dynamique', value: 'dynamique', icon: 'i-heroicons-arrow-path' }
-                        ]" required />
-                    </div>
-
-                    <div>
-                        <label for="edit-content" class="block text-sm font-medium text-gray-700 mb-1">
-                            Contenu
-                        </label>
-                        <UTextarea id="edit-content" v-model="editForm.content" placeholder="https://example.com"
-                            required />
-                    </div>
-                </form>
-            </template>
-
-            <template #footer>
-                <div class="flex justify-end gap-3">
-                    <UButton color="neutral" variant="soft" label="Annuler" @click="showEditModal = false" />
-                    <UButton color="primary" :loading="isEditing" :disabled="isEditing"
-                        :label="isEditing ? 'Modification...' : 'Modifier'" @click="handleEditQRCode" />
-                </div>
-            </template>
-        </UModal>
-
-        <UModal v-model:open="showDeleteModal" :ui="{ wrapper: 'z-50' }">
-            <template #header>
-                <div class="text-xl font-bold text-gray-900">Supprimer le QR code</div>
-            </template>
-
-            <template #body>
-                <div class="space-y-4">
-                    <p class="text-gray-600">
-                        Êtes-vous sûr de vouloir supprimer le QR code
-                        <span class="font-semibold">"{{ selectedQR?.name }}"</span> ?
-                    </p>
-                    <p class="text-sm text-red-600">
-                        Cette action est irréversible.
-                    </p>
-                </div>
-            </template>
-
-            <template #footer>
-                <div class="flex justify-end gap-3">
-                    <UButton color="neutral" variant="soft" label="Annuler" @click="showDeleteModal = false" />
-                    <UButton color="error" :loading="isDeleting" :disabled="isDeleting"
-                        :label="isDeleting ? 'Suppression...' : 'Supprimer'" @click="confirmDeleteQRCode" />
-                </div>
-            </template>
-        </UModal>
+        <QRCodeDeleteModal
+            :is-open="showDeleteModal"
+            :selected-q-r="selectedQR"
+            :is-deleting="isDeleting"
+            @update:is-open="showDeleteModal = $event"
+            @confirm-delete="confirmDeleteQRCode"
+        />
     </div>
 </template>

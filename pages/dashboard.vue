@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { useHead } from '#app';
 import QRCode from 'qrcode';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import AnalyticsSection from '~/components/AnalyticsSection.vue';
 import CampaignsSection from '~/components/CampaignsSection.vue';
+import HelpSection from '~/components/HelpSection.vue';
+import ProfilSection from '~/components/ProfilSection.vue';
+import QRCodeGenerateModal from '~/components/Modal/QRCodeGenerateModal.vue';
+import CampaignCreateModal from '~/components/Modal/CampaignCreateModal.vue';
 import type { Database } from '~/types/supabase';
 
 definePageMeta({
@@ -24,33 +28,18 @@ useHead({
 
 const activeSection = ref('dashboard')
 const showGenerateModal = ref(false)
-const showEditModal = ref(false)
-const showShareModal = ref(false)
-const selectedQRCodeId = ref<number | null>(null)
 const qrcodes = ref<Database['public']['Tables']['qrcodes']['Row'][]>([])
 const campaigns = ref<Database['public']['Tables']['campaigns']['Row'][]>([])
 const loadingQRCodes = ref(false)
 const loadingCampaigns = ref(false)
-const newQRCodeData = ref({
-    name: '',
-    type: 'statique',
-    content: '',
-    campaign_id: null as number | null
-})
-const newCampaignData = ref({
-    name: '',
-    description: '',
-    status: 'active' as 'active' | 'paused' | 'archived',
-    start_date: '',
-    end_date: ''
-})
 const generatedQRCode = ref<string | null>(null)
 const isCreatingQRCode = ref(false)
 const isCreatingCampaign = ref(false)
 const showCreateCampaignModal = ref(false)
+const userProfile = ref<Database['public']['Tables']['profiles']['Row'] | null>(null)
 
-async function handleCreateQRCode() {
-    if (!user.value || !newQRCodeData.value.name || !newQRCodeData.value.content) {
+async function handleCreateQRCode(qrData: { name: string, type: 'statique' | 'dynamique', content: string, campaign_id: number | null }) {
+    if (!user.value || !qrData.name || !qrData.content) {
         toast.add({
             title: 'Erreur',
             description: 'Veuillez remplir tous les champs.',
@@ -67,10 +56,10 @@ async function handleCreateQRCode() {
             .from('qrcodes')
             .insert({
                 user_id: user.value.id,
-                name: newQRCodeData.value.name,
-                type: newQRCodeData.value.type,
-                content: newQRCodeData.value.content,
-                campaign_id: newQRCodeData.value.campaign_id
+                name: qrData.name,
+                type: qrData.type,
+                content: qrData.content,
+                campaign_id: qrData.campaign_id
             })
             .select()
             .single()
@@ -87,12 +76,12 @@ async function handleCreateQRCode() {
 
         toast.add({
             title: 'QR Code créé avec succès !',
-            description: `Le QR code "${newQRCodeData.value.name}" a été généré.`,
+            description: `Le QR code "${qrData.name}" a été généré.`,
             color: 'success',
             icon: 'i-heroicons-check-circle'
         })
 
-        resetModal()
+        showGenerateModal.value = false
         activeSection.value = 'my-qrcodes'
         await fetchQrCodes()
 
@@ -109,11 +98,7 @@ async function handleCreateQRCode() {
     }
 }
 
-function resetModal() {
-    showGenerateModal.value = false
-    generatedQRCode.value = null
-    newQRCodeData.value = { name: '', type: 'statique', content: '', campaign_id: null }
-}
+
 
 async function fetchQrCodes() {
     if (!user.value) return
@@ -161,8 +146,43 @@ async function fetchCampaigns() {
     }
 }
 
-async function handleCreateCampaign() {
-    if (!user.value || !newCampaignData.value.name) {
+async function fetchUserProfile() {
+    if (!user.value) return
+
+    try {
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.value.id)
+            .single()
+
+        if (error) {
+            userProfile.value = {
+                id: user.value.id,
+                first_name: user.value.user_metadata?.first_name || '',
+                last_name: user.value.user_metadata?.last_name || '',
+                company_name: user.value.user_metadata?.company_name || '',
+                created_at: new Date().toISOString()
+            }
+        } else {
+            userProfile.value = data
+        }
+    } catch (error) {
+        console.error('Error fetching user profile:', error)
+        if (user.value) {
+            userProfile.value = {
+                id: user.value.id,
+                first_name: user.value.user_metadata?.first_name || '',
+                last_name: user.value.user_metadata?.last_name || '',
+                company_name: user.value.user_metadata?.company_name || '',
+                created_at: new Date().toISOString()
+            }
+        }
+    }
+}
+
+async function handleCreateCampaign(campaignData: { name: string, description: string, status: 'active' | 'paused' | 'archived', start_date: string, end_date: string }) {
+    if (!user.value || !campaignData.name) {
         toast.add({
             title: 'Erreur',
             description: 'Veuillez remplir le nom de la campagne.',
@@ -178,11 +198,11 @@ async function handleCreateCampaign() {
             .from('campaigns')
             .insert({
                 user_id: user.value.id,
-                name: newCampaignData.value.name,
-                description: newCampaignData.value.description,
-                status: newCampaignData.value.status,
-                start_date: newCampaignData.value.start_date || null,
-                end_date: newCampaignData.value.end_date || null
+                name: campaignData.name,
+                description: campaignData.description,
+                status: campaignData.status,
+                start_date: campaignData.start_date || null,
+                end_date: campaignData.end_date || null
             })
             .select()
             .single()
@@ -191,12 +211,12 @@ async function handleCreateCampaign() {
 
         toast.add({
             title: 'Campagne créée avec succès !',
-            description: `La campagne "${newCampaignData.value.name}" a été créée.`,
+            description: `La campagne "${campaignData.name}" a été créée.`,
             color: 'success',
             icon: 'i-heroicons-megaphone'
         })
 
-        resetCampaignModal()
+        showCreateCampaignModal.value = false
         await fetchCampaigns()
 
     } catch (error) {
@@ -212,20 +232,12 @@ async function handleCreateCampaign() {
     }
 }
 
-function resetCampaignModal() {
-    showCreateCampaignModal.value = false
-    newCampaignData.value = {
-        name: '',
-        description: '',
-        status: 'active',
-        start_date: '',
-        end_date: ''
-    }
-}
+
 
 onMounted(() => {
     fetchQrCodes()
     fetchCampaigns()
+    fetchUserProfile()
 })
 
 const getSectionTitle = (section: string) => {
@@ -233,6 +245,8 @@ const getSectionTitle = (section: string) => {
         'my-qrcodes': 'Mes QR codes',
         'analytics': 'Analyses',
         'campaigns': 'Campagnes',
+        'help': 'Centre d\'aide',
+        'profile': 'Mon profil',
     }
     return titles[section] || section
 }
@@ -258,10 +272,11 @@ function handleDeleteQRCode(id: number) {
     fetchQrCodes()
 }
 
-function handleShareQRCode(id: number) {
-    selectedQRCodeId.value = id
-    showShareModal.value = true
-}
+watch(activeSection, (newSection, oldSection) => {
+    if (oldSection === 'profile' && newSection !== 'profile') {
+        fetchUserProfile()
+    }
+})
 </script>
 
 <template>
@@ -275,10 +290,10 @@ function handleShareQRCode(id: number) {
                         </div>
 
                         <div class="flex items-center space-x-3">
-                            <button
+                            <button @click="showCreateCampaignModal = true"
                                 class="bg-white hover:bg-[#dde8fb] border border-[#dde8fb] text-[#001d4a] px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2">
-                                <Icon name="heroicons:bell" class="w-5 h-5" />
-                                <span>Notifications</span>
+                                <Icon name="heroicons:megaphone" class="w-5 h-5" />
+                                <span>Nouvelle campagne</span>
                             </button>
 
                             <button @click="showGenerateModal = true"
@@ -335,21 +350,31 @@ function handleShareQRCode(id: number) {
                     </nav>
 
                     <div class="p-4">
-                        <div v-if="user"
-                            class="flex items-center space-x-3 mb-4 bg-[#f5f7fb] rounded-lg p-2 border border-[#dde8fb]">
+                        <button v-if="user" @click="activeSection = 'profile'"
+                            :class="[
+                                'w-full flex items-center space-x-3 mb-4 bg-[#f5f7fb] rounded-lg p-2 border border-[#dde8fb] transition-colors hover:bg-[#e8effc]',
+                                activeSection === 'profile' ? 'ring-2 ring-yellow-400' : ''
+                            ]">
                             <div class="w-10 h-10 bg-[#ff9472] rounded-lg flex items-center justify-center">
                                 <Icon name="heroicons:user" class="w-5 h-5 text-white" />
                             </div>
-                            <div>
-                                <div v-if="user.user_metadata" class="font-medium text-gray-900">{{
-                                    user.user_metadata.first_name }} {{ user.user_metadata.last_name }}</div>
-                                <div v-if="user.user_metadata" class="text-sm text-gray-600">
+                            <div class="text-left">
+                                <div v-if="userProfile" class="font-medium text-gray-900">
+                                    {{ userProfile.first_name }} {{ userProfile.last_name }}
+                                </div>
+                                <div v-else-if="user.user_metadata" class="font-medium text-gray-900">
+                                    {{ user.user_metadata.first_name }} {{ user.user_metadata.last_name }}
+                                </div>
+                                <div v-if="userProfile" class="text-sm text-gray-600">
+                                    {{ userProfile.company_name || 'Aucune entreprise' }}
+                                </div>
+                                <div v-else-if="user.user_metadata" class="text-sm text-gray-600">
                                     {{ user.user_metadata.company_name }}
                                 </div>
                             </div>
-                        </div>
+                        </button>
 
-                        <button
+                        <button @click="activeSection = 'help'"
                             class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg flex items-center space-x-3 transition-colors">
                             <Icon name="heroicons:question-mark-circle" class="w-5 h-5" />
                             <span>Besoin d'aide ?</span>
@@ -366,9 +391,9 @@ function handleShareQRCode(id: number) {
                 <main class="flex-1 pl-8 overflow-y-auto">
                     <div v-if="activeSection === 'dashboard'"
                         class="bg-white border border-gray-200 overflow-y-auto rounded-3xl p-4 h-full">
-                        <div class="mb-8" v-if="user && user.user_metadata">
-                            <h1 class="text-3xl font-bold text-gray-900 mb-2">Bienvenue {{ user.user_metadata.first_name
-                            }}
+                        <div class="mb-8" v-if="user">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                                Bienvenue {{ userProfile?.first_name || user.user_metadata?.first_name || 'utilisateur' }}
                             </h1>
                             <p class="text-gray-600">Découvrez le meilleur de QRMaster, en ligne</p>
                         </div>
@@ -439,20 +464,23 @@ function handleShareQRCode(id: number) {
                         </div>
 
                         <QRCodeSection v-else :qrcodes="qrcodes" :campaigns="campaigns" @edit="handleEditQRCode"
-                            @delete="handleDeleteQRCode" @share="handleShareQRCode" />
+                            @delete="handleDeleteQRCode" />
                     </div>
 
                     <div v-else-if="activeSection === 'campaigns'">
-                        <CampaignsSection :campaigns="campaigns" :qrcodes="qrcodes" :loadingCampaigns="loadingCampaigns"
-                            :showCreateCampaignModal="showCreateCampaignModal" :newCampaignData="newCampaignData"
-                            :isCreatingCampaign="isCreatingCampaign"
-                            @update:showCreateCampaignModal="showCreateCampaignModal = $event"
-                            @update:newCampaignData="newCampaignData = $event" @createCampaign="handleCreateCampaign"
-                            @resetCampaignModal="resetCampaignModal" />
+                        <CampaignsSection :campaigns="campaigns" :qrcodes="qrcodes" :loadingCampaigns="loadingCampaigns" />
                     </div>
 
                     <div v-else-if="activeSection === 'analytics'">
                         <AnalyticsSection :qrcodes="qrcodes" :campaigns="campaigns" />
+                    </div>
+
+                    <div v-else-if="activeSection === 'help'">
+                        <HelpSection />
+                    </div>
+
+                    <div v-else-if="activeSection === 'profile'">
+                        <ProfilSection />
                     </div>
 
                     <div v-else>
@@ -464,64 +492,23 @@ function handleShareQRCode(id: number) {
                 </main>
             </div>
 
-            <UModal v-model:open="showGenerateModal" :ui="{ wrapper: 'z-50' }">
-                <template #header>
-                    <div class="text-xl font-bold text-gray-900">Générer un QR code</div>
-                </template>
+            <QRCodeGenerateModal
+                :is-open="showGenerateModal"
+                :campaigns="campaigns"
+                :is-creating="isCreatingQRCode"
+                :generated-q-r-code="generatedQRCode"
+                @update:is-open="showGenerateModal = $event"
+                @create="handleCreateQRCode"
+                @reset="generatedQRCode = null"
+            />
 
-                <template #body>
-                    <form @submit.prevent="handleCreateQRCode" class="space-y-4">
-                        <div>
-                            <label for="qr-name" class="block text-sm font-medium text-gray-700 mb-1">
-                                Nom du QR code
-                            </label>
-                            <UInput id="qr-name" name="qr-name" v-model="newQRCodeData.name" placeholder="Mon QR code"
-                                required />
-                        </div>
-
-                        <div>
-                            <label for="qr-campaign" class="block text-sm font-medium text-gray-700 mb-1">
-                                Campagne (optionnel)
-                            </label>
-                            <USelect id="qr-campaign" name="qr-campaign" v-model="newQRCodeData.campaign_id" :items="[
-                                { label: 'Aucune campagne', value: null },
-                                ...campaigns.map(c => ({ label: c.name, value: c.id }))
-                            ]" placeholder="Sélectionnez une campagne" />
-                        </div>
-
-                        <div>
-                            <label for="qr-type" class="block text-sm font-medium text-gray-700 mb-1">
-                                Type de QR code
-                            </label>
-                            <USelect id="qr-type" name="qr-type" v-model="newQRCodeData.type" :items="[
-                                { label: 'Statique', value: 'statique', icon: 'i-heroicons-qr-code' },
-                                { label: 'Dynamique', value: 'dynamique', icon: 'i-heroicons-arrow-path' }
-                            ]" placeholder="Sélectionnez un type" color="primary" required />
-                        </div>
-
-                        <div>
-                            <label for="qr-content" class="block text-sm font-medium text-gray-700 mb-1">
-                                Contenu
-                            </label>
-                            <UTextarea id="qr-content" name="qr-content" v-model="newQRCodeData.content"
-                                placeholder="https://example.com" required />
-                        </div>
-
-                        <div v-if="generatedQRCode" class="flex justify-center py-4">
-                            <img :src="generatedQRCode" alt="Generated QR Code" class="w-48 h-48" />
-                        </div>
-                    </form>
-                </template>
-
-                <template #footer>
-                    <div class="flex justify-end gap-3">
-                        <UButton color="neutral" variant="soft" label="Annuler" @click="resetModal" />
-                        <UButton color="primary" :loading="isCreatingQRCode" :disabled="isCreatingQRCode"
-                            :label="isCreatingQRCode ? 'Génération...' : 'Générer'" @click="handleCreateQRCode" />
-                    </div>
-                </template>
-            </UModal>
-
+            <CampaignCreateModal
+                :is-open="showCreateCampaignModal"
+                :is-creating="isCreatingCampaign"
+                @update:is-open="showCreateCampaignModal = $event"
+                @create="handleCreateCampaign"
+                @reset="() => {}"
+            />
 
         </div>
     </div>
