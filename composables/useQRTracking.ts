@@ -144,7 +144,6 @@ export const useQRTracking = () => {
         referrer?: string | null
     ) => {
         try {
-            console.log('📊 recordScan starting...', { qrcodeId, userAgent, ipAddress, referrer })
             const { device_type, browser } = parseUserAgent(userAgent)
 
             const { country, city } = await getLocationFromIP(ipAddress)
@@ -154,15 +153,6 @@ export const useQRTracking = () => {
                 .select('campaign_id')
                 .eq('id', qrcodeId)
                 .single()
-
-            console.log('💾 Inserting scan data...', {
-                qrcode_id: qrcodeId,
-                campaign_id: qrcode?.campaign_id || null,
-                country,
-                city,
-                device_type,
-                browser
-            })
 
             const { data, error } = await supabase
                 .from('qr_scans')
@@ -181,8 +171,6 @@ export const useQRTracking = () => {
                 .select()
                 .single()
 
-            console.log('💾 Insert result:', { data, error })
-
             const { data: currentQR } = await supabase
                 .from('qrcodes')
                 .select('scan_count')
@@ -190,15 +178,10 @@ export const useQRTracking = () => {
                 .single()
 
             if (currentQR) {
-                const newScanCount = (currentQR.scan_count || 0) + 1
-                console.log('🔢 Updating scan count...', { currentCount: currentQR.scan_count, newCount: newScanCount })
-
-                const updateResult = await supabase
+                await supabase
                     .from('qrcodes')
-                    .update({ scan_count: newScanCount })
+                    .update({ scan_count: (currentQR.scan_count || 0) + 1 })
                     .eq('id', qrcodeId)
-
-                console.log('🔢 Update scan count result:', updateResult)
             }
 
             return { data, error }

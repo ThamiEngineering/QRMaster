@@ -21,9 +21,7 @@ const handleScan = async () => {
             .single()
 
         if (qrcodeError || !qrcodeData) {
-            console.error('QR Code lookup error:', qrcodeError, 'ID searched:', qrcodeId)
-            console.error('Full error details:', { qrcodeError, qrcodeId, timestamp: new Date().toISOString() })
-            throw new Error(`QR code non trouvé (ID: ${qrcodeId})`)
+            throw new Error('QR code non trouvé')
         }
 
         qrcode.value = qrcodeData
@@ -40,14 +38,8 @@ const handleScan = async () => {
             console.warn('Could not get IP address:', ipError)
         }
 
-        console.log('🔍 Starting scan recording...', { qrcodeId, userAgent, ipAddress, referrer })
         recordScan(qrcodeId, userAgent, ipAddress, referrer)
-            .then(result => {
-                console.log('✅ Scan recorded successfully:', result)
-            })
-            .catch(error => {
-                console.error('❌ Error recording scan:', error)
-            })
+            .catch(error => console.error('Error recording scan:', error))
 
         if (qrcodeData.content) {
             setTimeout(() => {
