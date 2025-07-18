@@ -21,7 +21,9 @@ const handleScan = async () => {
             .single()
 
         if (qrcodeError || !qrcodeData) {
-            throw new Error('QR code non trouvé')
+            console.error('QR Code lookup error:', qrcodeError, 'ID searched:', qrcodeId)
+            console.error('Full error details:', { qrcodeError, qrcodeId, timestamp: new Date().toISOString() })
+            throw new Error(`QR code non trouvé (ID: ${qrcodeId})`)
         }
 
         qrcode.value = qrcodeData
