@@ -40,8 +40,14 @@ const handleScan = async () => {
             console.warn('Could not get IP address:', ipError)
         }
 
+        console.log('🔍 Starting scan recording...', { qrcodeId, userAgent, ipAddress, referrer })
         recordScan(qrcodeId, userAgent, ipAddress, referrer)
-            .catch(error => console.error('Error recording scan:', error))
+            .then(result => {
+                console.log('✅ Scan recorded successfully:', result)
+            })
+            .catch(error => {
+                console.error('❌ Error recording scan:', error)
+            })
 
         if (qrcodeData.content) {
             setTimeout(() => {
