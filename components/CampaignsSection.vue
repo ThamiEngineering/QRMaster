@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { Database } from '~/types/supabase';
-import CampaignEditModal from '~/components/Modal/CampaignEditModal.vue';
+import CampaignAnalyticsModal from '~/components/Modal/CampaignAnalyticsModal.vue';
 import CampaignDeleteModal from '~/components/Modal/CampaignDeleteModal.vue';
+import CampaignEditModal from '~/components/Modal/CampaignEditModal.vue';
+import type { Database } from '~/types/supabase';
 
 interface Props {
     campaigns: Database['public']['Tables']['campaigns']['Row'][]
@@ -33,6 +34,9 @@ const isDeleteModalOpen = ref(false)
 const selectedCampaignForDelete = ref<Database['public']['Tables']['campaigns']['Row'] | null>(null)
 const isDeleting = ref(false)
 
+const isAnalyticsModalOpen = ref(false)
+const selectedCampaignForAnalytics = ref<Database['public']['Tables']['campaigns']['Row'] | null>(null)
+
 const getQRCodeCountForCampaign = (campaignId: number) => {
     return props.qrcodes.filter(qr => qr.campaign_id === campaignId).length
 }
@@ -44,7 +48,7 @@ const openEditModal = (campaign: Database['public']['Tables']['campaigns']['Row'
 
 const handleEditCampaign = async (form: EditForm) => {
     if (!selectedCampaign.value) return
-    
+
     isEditing.value = true
     try {
         emit('editCampaign', selectedCampaign.value.id, form)
@@ -61,7 +65,7 @@ const openDeleteModal = (campaign: Database['public']['Tables']['campaigns']['Ro
 
 const handleDeleteCampaign = async () => {
     if (!selectedCampaignForDelete.value) return
-    
+
     isDeleting.value = true
     try {
         emit('deleteCampaign', selectedCampaignForDelete.value.id)
@@ -69,6 +73,11 @@ const handleDeleteCampaign = async () => {
     } finally {
         isDeleting.value = false
     }
+}
+
+const openAnalyticsModal = (campaign: Database['public']['Tables']['campaigns']['Row']) => {
+    selectedCampaignForAnalytics.value = campaign
+    isAnalyticsModalOpen.value = true
 }
 </script>
 
@@ -125,16 +134,16 @@ const handleDeleteCampaign = async () => {
                 </div>
 
                 <div class="flex gap-2">
-                        <button
-                            class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-colors">
-                            <Icon name="heroicons:chart-bar" class="w-4 h-4" />
-                            Analytics
-                        </button>
-                        <button @click="openEditModal(campaign)"
-                            class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-colors">
-                            <Icon name="heroicons:pencil" class="w-4 h-4" />
-                            Modifier
-                        </button>
+                    <button @click="openAnalyticsModal(campaign)"
+                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-colors">
+                        <Icon name="heroicons:chart-bar" class="w-4 h-4" />
+                        Analytics
+                    </button>
+                    <button @click="openEditModal(campaign)"
+                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-colors">
+                        <Icon name="heroicons:pencil" class="w-4 h-4" />
+                        Modifier
+                    </button>
                     <button @click="openDeleteModal(campaign)"
                         class="flex-1 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-colors">
                         <Icon name="heroicons:trash" class="w-4 h-4" />
@@ -144,18 +153,13 @@ const handleDeleteCampaign = async () => {
             </div>
         </div>
 
-        <CampaignEditModal 
-            v-model:is-open="isEditModalOpen"
-            :selected-campaign="selectedCampaign"
-            :is-editing="isEditing"
-            @edit="handleEditCampaign"
-        />
+        <CampaignEditModal v-model:is-open="isEditModalOpen" :selected-campaign="selectedCampaign"
+            :is-editing="isEditing" @edit="handleEditCampaign" />
 
-        <CampaignDeleteModal 
-            v-model:is-open="isDeleteModalOpen"
-            :selected-campaign="selectedCampaignForDelete"
-            :is-deleting="isDeleting"
-            @confirm-delete="handleDeleteCampaign"
-        />
+        <CampaignDeleteModal v-model:is-open="isDeleteModalOpen" :selected-campaign="selectedCampaignForDelete"
+            :is-deleting="isDeleting" @confirm-delete="handleDeleteCampaign" />
+
+        <CampaignAnalyticsModal v-model:is-open="isAnalyticsModalOpen" :selected-campaign="selectedCampaignForAnalytics"
+            :qrcodes="qrcodes" />
     </div>
 </template>

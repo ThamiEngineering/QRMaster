@@ -5,9 +5,9 @@ import { onMounted, ref, watch } from 'vue';
 import AnalyticsSection from '~/components/AnalyticsSection.vue';
 import CampaignsSection from '~/components/CampaignsSection.vue';
 import HelpSection from '~/components/HelpSection.vue';
-import ProfilSection from '~/components/ProfilSection.vue';
-import QRCodeGenerateModal from '~/components/Modal/QRCodeGenerateModal.vue';
 import CampaignCreateModal from '~/components/Modal/CampaignCreateModal.vue';
+import QRCodeGenerateModal from '~/components/Modal/QRCodeGenerateModal.vue';
+import ProfilSection from '~/components/ProfilSection.vue';
 import type { Database } from '~/types/supabase';
 
 definePageMeta({
@@ -65,11 +65,15 @@ async function handleCreateQRCode(qrData: { name: string, type: 'statique' | 'dy
             .single()
 
         if (insertError) throw insertError
-        if (!newRecord || !newRecord.content) {
-            throw new Error("Failed to create QR code record or content is missing.")
+        if (!newRecord) {
+            throw new Error("Failed to create QR code record.")
         }
 
-        generatedQRCode.value = await QRCode.toDataURL(newRecord.content, {
+        const config = useRuntimeConfig()
+        const baseUrl = config.public.baseUrl || window.location.origin
+        const trackingUrl = `${baseUrl}/scan/${newRecord.id}`
+
+        generatedQRCode.value = await QRCode.toDataURL(trackingUrl, {
             width: 256,
             margin: 2
         })
@@ -299,7 +303,7 @@ watch(activeSection, (newSection, oldSection) => {
                             <button @click="showGenerateModal = true"
                                 class="bg-white hover:bg-[#dde8fb] border border-[#dde8fb] text-[#001d4a] px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2">
                                 <Icon name="heroicons:plus" class="w-5 h-5" />
-                                <span>Générer</span>
+                                <span>Nouveau QR code</span>
                             </button>
                         </div>
                     </div>
@@ -350,11 +354,10 @@ watch(activeSection, (newSection, oldSection) => {
                     </nav>
 
                     <div class="p-4">
-                        <button v-if="user" @click="activeSection = 'profile'"
-                            :class="[
-                                'w-full flex items-center space-x-3 mb-4 bg-[#f5f7fb] rounded-lg p-2 border border-[#dde8fb] transition-colors hover:bg-[#e8effc]',
-                                activeSection === 'profile' ? 'ring-2 ring-yellow-400' : ''
-                            ]">
+                        <button v-if="user" @click="activeSection = 'profile'" :class="[
+                            'w-full flex items-center space-x-3 mb-4 bg-[#f5f7fb] rounded-lg p-2 border border-[#dde8fb] transition-colors hover:bg-[#e8effc]',
+                            activeSection === 'profile' ? 'ring-2 ring-yellow-400' : ''
+                        ]">
                             <div class="w-10 h-10 bg-[#ff9472] rounded-lg flex items-center justify-center">
                                 <Icon name="heroicons:user" class="w-5 h-5 text-white" />
                             </div>
@@ -393,7 +396,8 @@ watch(activeSection, (newSection, oldSection) => {
                         class="bg-white border border-gray-200 overflow-y-auto rounded-3xl p-4 h-full">
                         <div class="mb-8" v-if="user">
                             <h1 class="text-3xl font-bold text-gray-900 mb-2">
-                                Bienvenue {{ userProfile?.first_name || user.user_metadata?.first_name || 'utilisateur' }}
+                                Bienvenue {{ userProfile?.first_name || user.user_metadata?.first_name || 'utilisateur'
+                                }}
                             </h1>
                             <p class="text-gray-600">Découvrez le meilleur de QRMaster, en ligne</p>
                         </div>
@@ -468,7 +472,8 @@ watch(activeSection, (newSection, oldSection) => {
                     </div>
 
                     <div v-else-if="activeSection === 'campaigns'">
-                        <CampaignsSection :campaigns="campaigns" :qrcodes="qrcodes" :loadingCampaigns="loadingCampaigns" />
+                        <CampaignsSection :campaigns="campaigns" :qrcodes="qrcodes"
+                            :loadingCampaigns="loadingCampaigns" />
                     </div>
 
                     <div v-else-if="activeSection === 'analytics'">
@@ -492,23 +497,12 @@ watch(activeSection, (newSection, oldSection) => {
                 </main>
             </div>
 
-            <QRCodeGenerateModal
-                :is-open="showGenerateModal"
-                :campaigns="campaigns"
-                :is-creating="isCreatingQRCode"
-                :generated-q-r-code="generatedQRCode"
-                @update:is-open="showGenerateModal = $event"
-                @create="handleCreateQRCode"
-                @reset="generatedQRCode = null"
-            />
+            <QRCodeGenerateModal :is-open="showGenerateModal" :campaigns="campaigns" :is-creating="isCreatingQRCode"
+                :generated-q-r-code="generatedQRCode" @update:is-open="showGenerateModal = $event"
+                @create="handleCreateQRCode" @reset="generatedQRCode = null" />
 
-            <CampaignCreateModal
-                :is-open="showCreateCampaignModal"
-                :is-creating="isCreatingCampaign"
-                @update:is-open="showCreateCampaignModal = $event"
-                @create="handleCreateCampaign"
-                @reset="() => {}"
-            />
+            <CampaignCreateModal :is-open="showCreateCampaignModal" :is-creating="isCreatingCampaign"
+                @update:is-open="showCreateCampaignModal = $event" @create="handleCreateCampaign" @reset="() => { }" />
 
         </div>
     </div>

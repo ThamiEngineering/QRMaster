@@ -22,8 +22,11 @@ const modalOpen = computed({
 })
 
 const handleCopyToClipboard = () => {
-    if (props.selectedQR?.content) {
-        emit('copyToClipboard', props.selectedQR.content)
+    if (props.selectedQR?.id) {
+        const config = useRuntimeConfig()
+        const baseUrl = config.public.baseUrl || (process.client ? window.location.origin : 'https://qrmaster-ten.vercel.app')
+        const trackingUrl = `${baseUrl}/scan/${props.selectedQR.id}`
+        emit('copyToClipboard', trackingUrl)
     }
 }
 
@@ -48,11 +51,11 @@ const handleDownload = () => {
                     <div class="flex gap-2">
                         <UButton color="primary" variant="soft" icon="i-heroicons-link" label="Copier le lien"
                             @click="handleCopyToClipboard" />
-                        <UButton color="primary" variant="soft" icon="i-heroicons-arrow-down-tray"
-                            label="Télécharger" @click="handleDownload" />
+                        <UButton color="primary" variant="soft" icon="i-heroicons-arrow-down-tray" label="Télécharger"
+                            @click="handleDownload" />
                     </div>
                 </div>
             </div>
         </template>
     </UModal>
-</template> 
+</template>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import QRCode from 'qrcode';
 import { onMounted, ref, watch } from 'vue';
-import type { Database } from '~/types/supabase';
-import QRCodeShareModal from '~/components/Modal/QRCodeShareModal.vue';
-import QRCodeEditModal from '~/components/Modal/QRCodeEditModal.vue';
 import QRCodeDeleteModal from '~/components/Modal/QRCodeDeleteModal.vue';
+import QRCodeEditModal from '~/components/Modal/QRCodeEditModal.vue';
+import QRCodeShareModal from '~/components/Modal/QRCodeShareModal.vue';
+import type { Database } from '~/types/supabase';
 
 type QRCodeType = Database['public']['Tables']['qrcodes']['Row']
 type QRCodeWithImage = QRCodeType & { qr_code_image?: string };
@@ -30,12 +30,16 @@ const isDeleting = ref(false)
 const toast = useToast()
 
 const generateQrCodeImages = async () => {
+    const config = useRuntimeConfig()
+    const baseUrl = config.public.baseUrl || (process.client ? window.location.origin : 'https://yourapp.com')
+
     const promises = props.qrcodes.map(async (qr) => {
         if (!qr.content) {
             return { ...qr, qr_code_image: '' }
         }
         try {
-            const imageUrl = await QRCode.toDataURL(qr.content, { width: 128, margin: 1 });
+            const trackingUrl = `${baseUrl}/scan/${qr.id}`
+            const imageUrl = await QRCode.toDataURL(trackingUrl, { width: 128, margin: 1 });
             return { ...qr, qr_code_image: imageUrl };
         } catch (err) {
             console.error('Failed to generate QR code image for:', qr.name, err);
@@ -270,30 +274,14 @@ watch(() => props.qrcodes, generateQrCodeImages, { deep: true });
             </div>
         </div>
 
-        <QRCodeShareModal
-            :is-open="showShareModal"
-            :selected-q-r="selectedQR"
-            :qr-code-image="selectedQR?.qr_code_image || null"
-            @update:is-open="showShareModal = $event"
-            @copy-to-clipboard="copyToClipboard"
-            @download-q-r-code="downloadQRCode"
-        />
+        <QRCodeShareModal :is-open="showShareModal" :selected-q-r="selectedQR"
+            :qr-code-image="selectedQR?.qr_code_image || null" @update:is-open="showShareModal = $event"
+            @copy-to-clipboard="copyToClipboard" @download-q-r-code="downloadQRCode" />
 
-        <QRCodeEditModal
-            :is-open="showEditModal"
-            :selected-q-r="selectedQR"
-            :campaigns="campaigns || []"
-            :is-editing="isEditing"
-            @update:is-open="showEditModal = $event"
-            @edit="handleEditQRCode"
-        />
+        <QRCodeEditModal :is-open="showEditModal" :selected-q-r="selectedQR" :campaigns="campaigns || []"
+            :is-editing="isEditing" @update:is-open="showEditModal = $event" @edit="handleEditQRCode" />
 
-        <QRCodeDeleteModal
-            :is-open="showDeleteModal"
-            :selected-q-r="selectedQR"
-            :is-deleting="isDeleting"
-            @update:is-open="showDeleteModal = $event"
-            @confirm-delete="confirmDeleteQRCode"
-        />
+        <QRCodeDeleteModal :is-open="showDeleteModal" :selected-q-r="selectedQR" :is-deleting="isDeleting"
+            @update:is-open="showDeleteModal = $event" @confirm-delete="confirmDeleteQRCode" />
     </div>
 </template>

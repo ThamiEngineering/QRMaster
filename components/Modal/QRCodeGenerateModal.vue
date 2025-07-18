@@ -24,7 +24,6 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-// Computed pour gérer l'ouverture/fermeture de la modal
 const modalOpen = computed({
     get: () => props.isOpen,
     set: (value: boolean) => emit('update:isOpen', value)
@@ -97,7 +96,8 @@ watch(() => props.isOpen, (newValue) => {
                     <label for="qr-content" class="block text-sm font-medium text-gray-700 mb-1">
                         Contenu
                     </label>
-                    <UTextarea id="qr-content" v-model="qrCodeData.content" placeholder="https://example.com" required />
+                    <UTextarea id="qr-content" v-model="qrCodeData.content" placeholder="https://example.com"
+                        required />
                 </div>
 
                 <div v-if="generatedQRCode" class="flex justify-center py-4">
@@ -114,4 +114,4 @@ watch(() => props.isOpen, (newValue) => {
             </div>
         </template>
     </UModal>
-</template> 
+</template>
