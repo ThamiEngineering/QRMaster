@@ -265,9 +265,8 @@ watch(() => props.qrcodes, generateQrCodeImages, { deep: true });
                             <span class="hidden sm:inline">Modifier</span>
                         </button>
                         <button @click="handleDeleteQRCode(qr)"
-                            class="flex-1 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium py-2 px-2 rounded-lg flex items-center justify-center gap-1 transition-colors">
+                            class="bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium py-2 px-2 rounded-lg flex items-center justify-center transition-colors">
                             <Icon name="heroicons:trash" class="w-3 h-3" />
-                            <span class="hidden sm:inline">Supprimer</span>
                         </button>
                     </div>
                 </div>
