@@ -276,6 +276,76 @@ function handleDeleteQRCode(id: number) {
     fetchQrCodes()
 }
 
+async function handleEditCampaign(campaignId: number, form: { name: string, description: string | null, status: 'active' | 'paused' | 'archived', start_date: string | null, end_date: string | null }) {
+    if (!user.value) return
+
+    try {
+        const { error } = await supabase
+            .from('campaigns')
+            .update({
+                name: form.name,
+                description: form.description,
+                status: form.status,
+                start_date: form.start_date || null,
+                end_date: form.end_date || null
+            })
+            .eq('id', campaignId)
+            .eq('user_id', user.value.id)
+
+        if (error) throw error
+
+        toast.add({
+            title: 'Campagne modifiée avec succès !',
+            description: `La campagne "${form.name}" a été mise à jour.`,
+            color: 'success',
+            icon: 'i-heroicons-check-circle'
+        })
+
+        await fetchCampaigns()
+
+    } catch (error) {
+        console.error('Error editing campaign:', error)
+        toast.add({
+            title: 'Erreur lors de la modification',
+            description: 'Une erreur est survenue lors de la modification de la campagne.',
+            color: 'error',
+            icon: 'i-heroicons-exclamation-triangle'
+        })
+    }
+}
+
+async function handleDeleteCampaign(campaignId: number) {
+    if (!user.value) return
+
+    try {
+        const { error } = await supabase
+            .from('campaigns')
+            .delete()
+            .eq('id', campaignId)
+            .eq('user_id', user.value.id)
+
+        if (error) throw error
+
+        toast.add({
+            title: 'Campagne supprimée avec succès !',
+            description: 'La campagne a été définitivement supprimée.',
+            color: 'success',
+            icon: 'i-heroicons-trash'
+        })
+
+        await fetchCampaigns()
+
+    } catch (error) {
+        console.error('Error deleting campaign:', error)
+        toast.add({
+            title: 'Erreur lors de la suppression',
+            description: 'Une erreur est survenue lors de la suppression de la campagne.',
+            color: 'error',
+            icon: 'i-heroicons-exclamation-triangle'
+        })
+    }
+}
+
 watch(activeSection, (newSection, oldSection) => {
     if (oldSection === 'profile' && newSection !== 'profile') {
         fetchUserProfile()
@@ -411,7 +481,7 @@ watch(activeSection, (newSection, oldSection) => {
                                     réel.</p>
                                 <button @click="showGenerateModal = true"
                                     class="bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-                                    Déposez une demande
+                                    Commencer maintenant
                                 </button>
                             </div>
                             <div class="absolute right-0 top-0 w-64 h-full">
@@ -472,8 +542,8 @@ watch(activeSection, (newSection, oldSection) => {
                     </div>
 
                     <div v-else-if="activeSection === 'campaigns'">
-                        <CampaignsSection :campaigns="campaigns" :qrcodes="qrcodes"
-                            :loadingCampaigns="loadingCampaigns" />
+                        <CampaignsSection :campaigns="campaigns" :qrcodes="qrcodes" :loadingCampaigns="loadingCampaigns"
+                            @editCampaign="handleEditCampaign" @deleteCampaign="handleDeleteCampaign" />
                     </div>
 
                     <div v-else-if="activeSection === 'analytics'">
