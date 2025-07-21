@@ -15,7 +15,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "prepare": "husky install",
-    "format": "prettier --write . && eslint --fix ."
+    "format": "prettier --write . && eslint --fix .",
+    "test": "vitest"
   },
   "dependencies": {
     "@headlessui/tailwindcss": "^0.2.2",
@@ -50,16 +51,21 @@
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.37.0",
     "@typescript-eslint/parser": "^8.37.0",
+    "@vitejs/plugin-vue": "^5.2.4",
+    "@vitest/ui": "^3.2.4",
+    "@vue/test-utils": "^2.4.6",
     "cross-env": "^7.0.3",
     "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.3",
     "eslint-plugin-vue": "^10.3.0",
     "husky": "^9.1.7",
+    "jsdom": "^26.1.0",
     "lint-staged": "^16.1.2",
     "prettier": "^3.6.2",
     "supabase": "^2.30.4",
     "typescript": "^5.8.3",
-    "vue-tsc": "^2.2.10"
+    "vitest": "^3.2.4",
+    "vue-tsc": "^2.2.12"
   }
 }
