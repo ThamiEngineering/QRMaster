@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import type { Database } from '~/types/supabase'
+import { onMounted, ref } from 'vue'
 import AccountDeleteModal from '~/components/Modal/AccountDeleteModal.vue'
+import type { Database } from '~/types/supabase'
 
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
@@ -44,7 +44,7 @@ async function fetchProfile() {
                     created_at: new Date().toISOString()
                 }
                 updateEditedProfile()
-                
+
                 toast.add({
                     title: 'Profil local',
                     description: 'Utilisation des données du compte. Création de profil disponible.',
@@ -61,7 +61,7 @@ async function fetchProfile() {
                     created_at: new Date().toISOString()
                 }
                 updateEditedProfile()
-                
+
                 toast.add({
                     title: 'Mode hors ligne',
                     description: 'Connexion limitée. Certaines fonctions peuvent être indisponibles.',
@@ -84,7 +84,7 @@ async function fetchProfile() {
                 created_at: new Date().toISOString()
             }
             updateEditedProfile()
-            
+
             toast.add({
                 title: 'Mode hors ligne',
                 description: 'Utilisation des données locales. Veuillez vérifier votre connexion.',
@@ -163,7 +163,7 @@ async function saveProfile() {
                     company_name: editedProfile.value.company_name.trim()
                 }
                 isEditing.value = false
-                
+
                 toast.add({
                     title: 'Sauvegarde locale',
                     description: 'Modifications sauvegardées localement. Vérifiez votre connexion.',
@@ -171,7 +171,7 @@ async function saveProfile() {
                 })
                 return
             }
-            
+
             profile.value = insertData
         } else if (error) {
             throw error
@@ -188,16 +188,17 @@ async function saveProfile() {
         })
     } catch (error) {
         console.error('Error updating profile:', error)
-        
+
         isOfflineMode.value = true
         profile.value = {
-            ...profile.value,
-            first_name: editedProfile.value.first_name.trim(),
-            last_name: editedProfile.value.last_name.trim(),
-            company_name: editedProfile.value.company_name.trim()
+            id: profile.value?.id ?? user.value.id,
+            first_name: editedProfile.value.first_name.trim() || null,
+            last_name: editedProfile.value.last_name.trim() || null,
+            company_name: editedProfile.value.company_name.trim() || null,
+            created_at: profile.value?.created_at ?? new Date().toISOString()
         }
         isEditing.value = false
-        
+
         toast.add({
             title: 'Sauvegarde locale',
             description: 'Modifications sauvegardées localement. Vérifiez votre connexion.',
@@ -224,12 +225,12 @@ async function deleteAccount() {
     isDeleting.value = true
     try {
         const { error: authError } = await supabase.auth.admin.deleteUser(user.value.id)
-        
+
         if (authError) {
             console.log('Admin delete failed, doing signOut:', authError)
             await supabase.auth.signOut()
         }
-        
+
         toast.add({
             title: 'Compte supprimé',
             description: 'Votre compte a été supprimé définitivement.',
@@ -239,7 +240,7 @@ async function deleteAccount() {
         await router.push('/')
     } catch (error) {
         console.error('Error deleting account:', error)
-        
+
         try {
             await supabase.auth.signOut()
             toast.add({
@@ -271,8 +272,7 @@ onMounted(() => {
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-gray-900 mb-2">Mon profil</h1>
             <p class="text-gray-600">Gérez vos informations personnelles et paramètres de compte</p>
-            <div v-if="isOfflineMode" 
-                 class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div v-if="isOfflineMode" class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <div class="flex items-center">
                     <Icon name="heroicons:exclamation-triangle" class="w-5 h-5 text-yellow-600 mr-2" />
                     <p class="text-sm text-yellow-800">
@@ -283,7 +283,8 @@ onMounted(() => {
         </div>
 
         <div v-if="isLoading" class="text-center py-8">
-            <div class="animate-spin w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full mx-auto"></div>
+            <div class="animate-spin w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full mx-auto">
+            </div>
             <p class="text-gray-600 mt-4">Chargement des informations...</p>
         </div>
 
@@ -315,40 +316,22 @@ onMounted(() => {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Prénom *</label>
-                            <UInput
-                                v-model="editedProfile.first_name"
-                                placeholder="Votre prénom"
-                                size="lg"
-                                required
-                            />
+                            <UInput v-model="editedProfile.first_name" placeholder="Votre prénom" size="lg" required />
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Nom *</label>
-                            <UInput
-                                v-model="editedProfile.last_name"
-                                placeholder="Votre nom"
-                                size="lg"
-                                required
-                            />
+                            <UInput v-model="editedProfile.last_name" placeholder="Votre nom" size="lg" required />
                         </div>
                     </div>
-                    
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Entreprise</label>
-                        <UInput
-                            v-model="editedProfile.company_name"
-                            placeholder="Nom de votre entreprise"
-                            size="lg"
-                        />
+                        <UInput v-model="editedProfile.company_name" placeholder="Nom de votre entreprise" size="lg" />
                     </div>
 
                     <div class="flex space-x-3 pt-4">
-                        <UButton 
-                            type="submit" 
-                            :loading="isSaving"
-                            icon="i-heroicons-check"
-                            class="bg-yellow-400 hover:bg-yellow-500 text-gray-800"
-                        >
+                        <UButton type="submit" :loading="isSaving" icon="i-heroicons-check"
+                            class="bg-yellow-400 hover:bg-yellow-500 text-gray-800">
                             Sauvegarder
                         </UButton>
                         <UButton @click="cancelEditing" variant="outline" icon="i-heroicons-x-mark">
@@ -377,13 +360,8 @@ onMounted(() => {
             </div>
 
             <div class="rounded-xl">
-                <UButton 
-                    @click="showDeleteModal = true"
-                    color="error"
-                    variant="outline"
-                    icon="i-heroicons-trash"
-                    :disabled="isOfflineMode"
-                >
+                <UButton @click="showDeleteModal = true" color="error" variant="outline" icon="i-heroicons-trash"
+                    :disabled="isOfflineMode">
                     Supprimer mon compte
                 </UButton>
                 <p v-if="isOfflineMode" class="text-sm text-gray-500 mt-2">
@@ -392,12 +370,8 @@ onMounted(() => {
             </div>
         </div>
 
-        <AccountDeleteModal
-            :is-open="showDeleteModal"
-            :is-deleting="isDeleting"
-            @update:is-open="showDeleteModal = $event"
-            @confirm-delete="deleteAccount"
-        />
+        <AccountDeleteModal :is-open="showDeleteModal" :is-deleting="isDeleting"
+            @update:is-open="showDeleteModal = $event" @confirm-delete="deleteAccount" />
     </div>
 </template>
 
@@ -419,4 +393,4 @@ onMounted(() => {
     background-color: #e5e7eb;
     border-radius: 3px;
 }
-</style> 
+</style>
