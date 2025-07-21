@@ -31,18 +31,14 @@ const handleCancel = () => {
 
 <template>
   <div v-if="modalOpen" class="fixed inset-0 z-[60] flex items-center justify-center p-4">
-    <!-- Backdrop -->
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="handleCancel"></div>
 
-    <!-- Modal Container -->
     <div class="relative w-full max-w-md rounded-2xl overflow-hidden bg-black border border-white/20 shadow-2xl">
-      <!-- Background Effects -->
       <div class="absolute inset-0 overflow-hidden pointer-events-none">
         <div class="absolute -top-4 -right-4 w-24 h-24 bg-red-400/10 rounded-full blur-3xl"></div>
         <div class="absolute -bottom-4 -left-4 w-16 h-16 bg-red-400/5 rounded-full blur-2xl"></div>
       </div>
 
-      <!-- Header -->
       <div class="relative border-b border-white/10 p-6">
         <div class="flex items-center gap-4">
           <div class="w-12 h-12 bg-red-400/10 border border-red-400/20 rounded-xl flex items-center justify-center">
@@ -61,9 +57,7 @@ const handleCancel = () => {
         </div>
       </div>
 
-      <!-- Body -->
       <div class="relative p-6 space-y-6">
-        <!-- Warning Message -->
         <div class="text-center">
           <p class="text-white/80 mb-2">
             Êtes-vous sûr de vouloir supprimer le QR code
@@ -73,7 +67,6 @@ const handleCancel = () => {
           </p>
         </div>
 
-        <!-- Warning Card -->
         <div class="p-4 rounded-xl bg-gradient-to-r from-red-400/10 to-rose-400/10 border border-red-400/20">
           <div class="flex items-start gap-3">
             <div class="w-6 h-6 bg-red-400/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -90,7 +83,6 @@ const handleCancel = () => {
           </div>
         </div>
 
-        <!-- QR Code Info -->
         <div class="p-4 rounded-xl bg-white/5 border border-white/10">
           <div class="flex items-start justify-between">
             <div class="flex-1">
@@ -121,7 +113,6 @@ const handleCancel = () => {
           </div>
         </div>
 
-        <!-- Additional Warning -->
         <div class="p-3 rounded-xl bg-yellow-400/5 border border-yellow-400/10">
           <div class="flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400 flex-shrink-0">
@@ -134,7 +125,6 @@ const handleCancel = () => {
         </div>
       </div>
 
-      <!-- Footer -->
       <div class="relative border-t border-white/10 p-6">
         <div class="flex justify-end gap-4">
           <button @click="handleCancel" :disabled="isDeleting" class="relative h-12 px-6 group overflow-hidden bg-gradient-to-br from-white/[0.03] via-white/[0.05] to-white/[0.03] backdrop-blur-md border border-white/10 rounded-xl text-white/90 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">

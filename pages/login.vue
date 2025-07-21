@@ -45,7 +45,6 @@ const handleLogin = async () => {
 
 <template>
   <div class="relative min-h-screen bg-black text-white overflow-hidden">
-    <!-- Background Effects -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none select-none">
       <div class="absolute -left-4 top-1/2 -translate-y-1/2 -rotate-180 text-white/[0.03] text-[20rem] font-bold tracking-tighter [writing-mode:vertical-rl] blur-[1px]">
         QRMASTER
@@ -55,7 +54,6 @@ const handleLogin = async () => {
       </div>
     </div>
 
-    <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
@@ -85,19 +83,16 @@ const handleLogin = async () => {
       </div>
     </nav>
 
-    <!-- Main Content -->
     <div class="relative">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
         <div class="text-center max-w-4xl mx-auto mb-20">
           <div style="opacity: 1; transform: none;">
-            <!-- Beta Badge -->
             <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-400/10 border border-yellow-400/20 mb-8 backdrop-blur-sm">
                             <span class="text-sm font-medium text-yellow-400 flex items-center gap-2">
                                 Connexion sécurisée
                             </span>
             </div>
 
-            <!-- Title -->
             <div class="space-y-8">
               <h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tighter leading-[0.95]" style="opacity: 1; transform: none;">
                 <span class="inline-block" style="opacity: 1; transform: none;">Bienvenue sur</span>
@@ -113,22 +108,18 @@ const handleLogin = async () => {
           </div>
         </div>
 
-        <!-- Login Form Container -->
         <div class="flex justify-center">
           <div class="group relative w-full max-w-md p-8 rounded-2xl overflow-hidden bg-gradient-to-br from-white/[0.03] via-white/[0.05] to-white/[0.03] backdrop-blur-md border border-white/10 hover:border-white/20 shadow-2xl transition-all duration-500 ease-out">
 
-            <!-- Form Background Effect -->
             <div class="absolute inset-0 bg-gradient-to-br opacity-20 from-yellow-500/10 via-amber-500/10 to-orange-500/10"></div>
             <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 -translate-x-full group-hover:translate-x-full transition-all duration-1000"></div>
 
             <div class="relative space-y-6">
-              <!-- Form Header -->
               <div class="text-center space-y-2">
                 <h2 class="text-2xl font-bold text-white tracking-tight">Se connecter</h2>
                 <p class="text-white/60">Accédez à votre tableau de bord</p>
               </div>
 
-              <!-- Error Message -->
               <div v-if="errorMessage" class="relative p-4 rounded-xl overflow-hidden bg-gradient-to-br from-red-500/10 via-red-500/5 to-red-500/10 backdrop-blur-md border border-red-500/20">
                 <div class="absolute inset-0 bg-gradient-to-br opacity-20 from-red-500/20 via-red-500/10 to-red-500/20"></div>
                 <div class="relative flex items-center gap-3">
@@ -141,9 +132,7 @@ const handleLogin = async () => {
                 </div>
               </div>
 
-              <!-- Login Form -->
               <form @submit.prevent="handleLogin" class="space-y-6">
-                <!-- Email Field -->
                 <div class="space-y-2">
                   <label for="email" class="block text-sm font-medium text-white/90">
                     Adresse email <span class="text-yellow-400">*</span>
@@ -161,7 +150,6 @@ const handleLogin = async () => {
                   </div>
                 </div>
 
-                <!-- Password Field -->
                 <div class="space-y-2">
                   <label for="password" class="block text-sm font-medium text-white/90">
                     Mot de passe <span class="text-yellow-400">*</span>
@@ -201,7 +189,6 @@ const handleLogin = async () => {
                   </div>
                 </div>
 
-                <!-- Submit Button -->
                 <button
                     type="submit"
                     :disabled="loading"
@@ -221,14 +208,12 @@ const handleLogin = async () => {
                   </div>
                 </button>
 
-                <!-- Divider -->
                 <div class="flex items-center my-8">
                   <div class="flex-1 border-t border-white/10"></div>
                   <span class="px-4 text-white/50 text-sm">ou</span>
                   <div class="flex-1 border-t border-white/10"></div>
                 </div>
 
-                <!-- Register Link -->
                 <div class="text-center">
                   <span class="text-white/60">Vous n'avez pas de compte ? </span>
                   <NuxtLink to="/register" class="text-yellow-400 hover:text-yellow-300 font-medium transition-colors relative group">
@@ -243,7 +228,6 @@ const handleLogin = async () => {
       </div>
     </div>
 
-    <!-- Footer -->
     <footer class="absolute bottom-0 right-0 p-6 z-10">
       <div class="flex flex-wrap gap-4 text-xs text-white/40">
         <a href="#" class="hover:text-white/70 transition-colors relative group">

@@ -75,7 +75,6 @@ const campaignDuration = computed(() => {
 
 <template>
   <div v-if="modalOpen" class="fixed inset-0 z-[60] flex items-center justify-center p-4">
-    <!-- Backdrop -->
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="modalOpen = false"></div>
 
     <div class="relative w-full max-w-6xl max-h-[90vh] rounded-2xl overflow-hidden bg-black border border-white/20 shadow-2xl">
@@ -107,10 +106,8 @@ const campaignDuration = computed(() => {
         </div>
       </div>
 
-      <!-- Body -->
       <div class="relative p-6 overflow-y-auto max-h-[calc(90vh-220px)]" v-if="selectedCampaign && campaignAnalytics">
         <div class="space-y-8">
-          <!-- Campaign Info -->
           <div class="p-6 rounded-xl bg-gradient-to-r from-white/[0.03] via-white/[0.05] to-white/[0.03] backdrop-blur-md border border-white/10">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
@@ -140,7 +137,6 @@ const campaignDuration = computed(() => {
             </div>
           </div>
 
-          <!-- Key Metrics -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="group relative p-6 rounded-xl overflow-hidden bg-gradient-to-br from-white/[0.03] via-white/[0.05] to-white/[0.03] backdrop-blur-md border border-white/10 hover:border-white/20 transition-all duration-300">
               <div class="absolute inset-0 bg-gradient-to-br opacity-20 from-yellow-500/10 via-amber-500/10 to-orange-500/10"></div>
@@ -206,7 +202,6 @@ const campaignDuration = computed(() => {
             </div>
           </div>
 
-          <!-- QR Code Types -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="p-6 rounded-xl bg-gradient-to-br from-white/[0.03] via-white/[0.05] to-white/[0.03] backdrop-blur-md border border-white/10">
               <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-3">
@@ -236,7 +231,6 @@ const campaignDuration = computed(() => {
               </div>
             </div>
 
-            <!-- Top QR Codes -->
             <div class="p-6 rounded-xl bg-gradient-to-br from-white/[0.03] via-white/[0.05] to-white/[0.03] backdrop-blur-md border border-white/10">
               <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-3">
                 <div class="w-8 h-8 bg-yellow-400/10 border border-yellow-400/20 rounded-lg flex items-center justify-center">
@@ -270,7 +264,6 @@ const campaignDuration = computed(() => {
         </div>
       </div>
 
-      <!-- Footer -->
       <div class="relative border-t border-white/10 p-6">
         <div class="flex justify-end">
           <button @click="modalOpen = false"
