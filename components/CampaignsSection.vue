@@ -2,6 +2,7 @@
 import CampaignAnalyticsModal from '~/components/Modal/CampaignAnalyticsModal.vue'
 import CampaignDeleteModal from '~/components/Modal/CampaignDeleteModal.vue'
 import CampaignEditModal from '~/components/Modal/CampaignEditModal.vue'
+import { useSelectionStore } from '~/stores/selection'
 import type { Database } from '~/types/supabase'
 
 interface Props {
@@ -27,58 +28,57 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const isEditModalOpen = ref(false)
-const selectedCampaign = ref<Database['public']['Tables']['campaigns']['Row'] | null>(null)
 const isEditing = ref(false)
 
 const isDeleteModalOpen = ref(false)
-const selectedCampaignForDelete = ref<Database['public']['Tables']['campaigns']['Row'] | null>(null)
 const isDeleting = ref(false)
 
 const isAnalyticsModalOpen = ref(false)
-const selectedCampaignForAnalytics = ref<Database['public']['Tables']['campaigns']['Row'] | null>(
-  null
-)
+
+const selection = useSelectionStore()
 
 const getQRCodeCountForCampaign = (campaignId: number) => {
   return props.qrcodes.filter((qr) => qr.campaign_id === campaignId).length
 }
 
 const openEditModal = (campaign: Database['public']['Tables']['campaigns']['Row']) => {
-  selectedCampaign.value = campaign
+  selection.selectCampaign(campaign)
   isEditModalOpen.value = true
 }
 
 const handleEditCampaign = async (form: EditForm) => {
-  if (!selectedCampaign.value) return
+  if (!selection.selectedCampaign) return
 
   isEditing.value = true
   try {
-    emit('editCampaign', selectedCampaign.value.id, form)
+    emit('editCampaign', selection.selectedCampaign.id, form)
     isEditModalOpen.value = false
+    selection.unselectCampaign()
   } finally {
     isEditing.value = false
   }
 }
 
 const openDeleteModal = (campaign: Database['public']['Tables']['campaigns']['Row']) => {
-  selectedCampaignForDelete.value = campaign
+  selection.selectCampaign(campaign)
   isDeleteModalOpen.value = true
 }
 
 const handleDeleteCampaign = async () => {
-  if (!selectedCampaignForDelete.value) return
+  if (!selection.selectedCampaign) return
 
   isDeleting.value = true
   try {
-    emit('deleteCampaign', selectedCampaignForDelete.value.id)
+    emit('deleteCampaign', selection.selectedCampaign.id)
     isDeleteModalOpen.value = false
+    selection.unselectCampaign()
   } finally {
     isDeleting.value = false
   }
 }
 
 const openAnalyticsModal = (campaign: Database['public']['Tables']['campaigns']['Row']) => {
-  selectedCampaignForAnalytics.value = campaign
+  selection.selectCampaign(campaign)
   isAnalyticsModalOpen.value = true
 }
 </script>
@@ -171,21 +171,21 @@ const openAnalyticsModal = (campaign: Database['public']['Tables']['campaigns'][
 
     <CampaignEditModal
       v-model:is-open="isEditModalOpen"
-      :selected-campaign="selectedCampaign"
+      :selected-campaign="selection.selectedCampaign"
       :is-editing="isEditing"
       @edit="handleEditCampaign"
     />
 
     <CampaignDeleteModal
       v-model:is-open="isDeleteModalOpen"
-      :selected-campaign="selectedCampaignForDelete"
+      :selected-campaign="selection.selectedCampaign"
       :is-deleting="isDeleting"
       @confirm-delete="handleDeleteCampaign"
     />
 
     <CampaignAnalyticsModal
       v-model:is-open="isAnalyticsModalOpen"
-      :selected-campaign="selectedCampaignForAnalytics"
+      :selected-campaign="selection.selectedCampaign"
       :qrcodes="qrcodes"
     />
   </div>
