@@ -99,7 +99,7 @@ const handleRegister = async () => {
             aria-label="QRMaster Homepage"
           >
             <div class="relative w-8 h-8">
-              <div class="absolute inset-0 bg-yellow-400/20 rounded-xl blur-sm"/>
+              <div class="absolute inset-0 bg-yellow-400/20 rounded-xl blur-sm" />
               <div
                 class="relative w-full h-full rounded-xl bg-black border border-yellow-400/20 flex items-center justify-center"
               >
@@ -182,7 +182,7 @@ const handleRegister = async () => {
                   style="opacity: 1; transform: none"
                 >
                   <span class="relative z-10">compte QRMaster</span>
-                  <div class="absolute inset-0 bg-yellow-400/10 blur-3xl -z-10 animate-pulse"/>
+                  <div class="absolute inset-0 bg-yellow-400/10 blur-3xl -z-10 animate-pulse" />
                 </span>
               </h1>
               <p

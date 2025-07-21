@@ -70,7 +70,7 @@ const handleLogin = async () => {
             aria-label="QRMaster Homepage"
           >
             <div class="relative w-8 h-8">
-              <div class="absolute inset-0 bg-yellow-400/20 rounded-xl blur-sm"/>
+              <div class="absolute inset-0 bg-yellow-400/20 rounded-xl blur-sm" />
               <div
                 class="relative w-full h-full rounded-xl bg-black border border-yellow-400/20 flex items-center justify-center"
               >
@@ -134,7 +134,7 @@ const handleLogin = async () => {
                   style="opacity: 1; transform: none"
                 >
                   <span class="relative z-10">QRMaster</span>
-                  <div class="absolute inset-0 bg-yellow-400/10 blur-3xl -z-10 animate-pulse"/>
+                  <div class="absolute inset-0 bg-yellow-400/10 blur-3xl -z-10 animate-pulse" />
                 </span>
               </h1>
               <p
@@ -326,9 +326,9 @@ const handleLogin = async () => {
                 </button>
 
                 <div class="flex items-center my-8">
-                  <div class="flex-1 border-t border-white/10"/>
+                  <div class="flex-1 border-t border-white/10" />
                   <span class="px-4 text-white/50 text-sm">ou</span>
-                  <div class="flex-1 border-t border-white/10"/>
+                  <div class="flex-1 border-t border-white/10" />
                 </div>
 
                 <div class="text-center">

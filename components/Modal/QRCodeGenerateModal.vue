@@ -73,12 +73,8 @@ watch(
       class="relative w-full max-w-2xl rounded-2xl overflow-hidden bg-black border border-white/20 shadow-2xl"
     >
       <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          class="absolute -top-4 -right-4 w-32 h-32 bg-yellow-400/10 rounded-full blur-3xl"
-        />
-        <div
-          class="absolute -bottom-4 -left-4 w-24 h-24 bg-yellow-400/5 rounded-full blur-2xl"
-        />
+        <div class="absolute -top-4 -right-4 w-32 h-32 bg-yellow-400/10 rounded-full blur-3xl" />
+        <div class="absolute -bottom-4 -left-4 w-24 h-24 bg-yellow-400/5 rounded-full blur-2xl" />
       </div>
 
       <div class="relative border-b border-white/10 p-6">
@@ -355,48 +351,9 @@ watch(
             class="relative h-12 px-8 group overflow-hidden bg-gradient-to-r from-yellow-400 via-yellow-500 to-amber-500 hover:from-yellow-500 hover:via-amber-500 hover:to-orange-500 text-black rounded-xl border border-yellow-400/20 shadow-lg hover:shadow-yellow-400/25 transition-all duration-500 ease-out disabled:opacity-50 disabled:cursor-not-allowed"
             @click="handleCreate"
           >
-            <div
-              class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-            />
-            <div
-              class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 -translate-x-full group-hover:translate-x-full transition-all duration-1000"
-            />
             <div class="relative flex items-center justify-center gap-3">
               <span v-if="!isCreating" class="font-semibold">Générer</span>
               <span v-else class="font-semibold">Génération...</span>
-              <svg
-                v-if="!isCreating"
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="transition-transform group-hover:translate-x-1"
-              >
-                <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2Z" />
-                <path
-                  d="M13 11h4a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z"
-                />
-                <path d="M9 7V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v3" />
-              </svg>
-              <svg
-                v-else
-                class="animate-spin"
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-              </svg>
             </div>
           </button>
         </div>

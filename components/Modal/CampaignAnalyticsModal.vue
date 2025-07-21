@@ -84,8 +84,8 @@ const campaignDuration = computed(() => {
       class="relative w-full max-w-6xl max-h-[90vh] rounded-2xl overflow-hidden bg-black border border-white/20 shadow-2xl"
     >
       <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute -top-4 -right-4 w-32 h-32 bg-blue-400/10 rounded-full blur-3xl"/>
-        <div class="absolute -bottom-4 -left-4 w-24 h-24 bg-blue-400/5 rounded-full blur-2xl"/>
+        <div class="absolute -top-4 -right-4 w-32 h-32 bg-blue-400/10 rounded-full blur-3xl" />
+        <div class="absolute -bottom-4 -left-4 w-24 h-24 bg-blue-400/5 rounded-full blur-2xl" />
       </div>
 
       <div class="relative border-b border-white/10 p-6">
@@ -337,7 +337,7 @@ const campaignDuration = computed(() => {
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-3">
-                    <div class="w-3 h-3 bg-blue-400 rounded-full"/>
+                    <div class="w-3 h-3 bg-blue-400 rounded-full" />
                     <span class="text-white/80">Dynamique</span>
                   </div>
                   <span class="text-white font-semibold">{{
@@ -346,7 +346,7 @@ const campaignDuration = computed(() => {
                 </div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-3">
-                    <div class="w-3 h-3 bg-gray-400 rounded-full"/>
+                    <div class="w-3 h-3 bg-gray-400 rounded-full" />
                     <span class="text-white/80">Statique</span>
                   </div>
                   <span class="text-white font-semibold">{{
