@@ -689,6 +689,14 @@ watch(activeSection, (newSection, oldSection) => {
             </button>
 
             <button
+                class="w-full flex items-center space-x-3 mt-4 px-4 py-3 rounded-xl text-white/70 hover:text-blue-400 hover:bg-blue-500/10 border border-transparent hover:border-blue-500/20 transition-all duration-300 group"
+                @click="activeSection = 'help'"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
+              <span class="font-medium">Besoin d'aide ?</span>
+            </button>
+
+            <button
               class="w-full flex items-center space-x-3 mt-4 px-4 py-3 rounded-xl text-white/70 hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 transition-all duration-300 group"
               @click="logout"
             >
