@@ -4,6 +4,7 @@ import { onMounted, ref, watch } from 'vue'
 import QRCodeDeleteModal from '~/components/Modal/QRCodeDeleteModal.vue'
 import QRCodeEditModal from '~/components/Modal/QRCodeEditModal.vue'
 import QRCodeShareModal from '~/components/Modal/QRCodeShareModal.vue'
+import { useSelectionStore } from '~/stores/selection'
 import type { Database } from '~/types/supabase'
 
 type QRCodeType = Database['public']['Tables']['qrcodes']['Row']
@@ -24,7 +25,7 @@ const qrcodesWithImages = ref<QRCodeWithImage[]>([])
 const showShareModal = ref(false)
 const showEditModal = ref(false)
 const showDeleteModal = ref(false)
-const selectedQR = ref<QRCodeWithImage | null>(null)
+const selection = useSelectionStore()
 const isEditing = ref(false)
 const isDeleting = ref(false)
 const toast = useToast()
@@ -51,44 +52,45 @@ const generateQrCodeImages = async () => {
 }
 
 const openShareModal = (qr: QRCodeWithImage) => {
-  selectedQR.value = qr
+  selection.selectQRCode(qr)
   showShareModal.value = true
 }
 
 const openEditModal = (qr: QRCodeWithImage) => {
-  selectedQR.value = qr
+  selection.selectQRCode(qr)
   showEditModal.value = true
 }
 
 const handleDeleteQRCode = (qr: QRCodeWithImage) => {
-  selectedQR.value = qr
+  selection.selectQRCode(qr)
   showDeleteModal.value = true
 }
 
 const confirmDeleteQRCode = async () => {
-  if (!selectedQR.value) return
+  if (!selection.selectedQRCode) return
 
   isDeleting.value = true
   try {
     const supabase = useSupabaseClient()
-    const { error } = await supabase.from('qrcodes').delete().eq('id', selectedQR.value.id)
+    const { error } = await supabase.from('qrcodes').delete().eq('id', selection.selectedQRCode.id)
 
     if (error) throw error
 
-    const index = qrcodesWithImages.value.findIndex((qr) => qr.id === selectedQR.value!.id)
+    const index = qrcodesWithImages.value.findIndex((qr) => qr.id === selection.selectedQRCode!.id)
     if (index !== -1) {
       qrcodesWithImages.value.splice(index, 1)
     }
 
     toast.add({
       title: 'QR Code supprimé !',
-      description: `Le QR code "${selectedQR.value.name}" a été supprimé.`,
+      description: `Le QR code "${selection.selectedQRCode.name}" a été supprimé.`,
       color: 'success',
       icon: 'i-heroicons-trash',
     })
 
     showDeleteModal.value = false
-    emit('delete', selectedQR.value.id)
+    emit('delete', selection.selectedQRCode.id)
+    selection.unselectQRCode()
   } catch (error) {
     console.error('Error deleting QR code:', error)
     toast.add({
@@ -124,16 +126,16 @@ const copyToClipboard = async (content: string | null | undefined) => {
 }
 
 const downloadQRCode = () => {
-  if (!selectedQR.value?.qr_code_image) return
+  if (!selection.selectedQRCode?.qr_code_image) return
 
   const link = document.createElement('a')
-  link.download = `qrcode-${selectedQR.value.name}.png`
-  link.href = selectedQR.value.qr_code_image
+  link.download = `qrcode-${selection.selectedQRCode.name}.png`
+  link.href = selection.selectedQRCode.qr_code_image
   link.click()
 
   toast.add({
     title: 'Téléchargement lancé !',
-    description: `Le QR code "${selectedQR.value.name}" a été téléchargé.`,
+    description: `Le QR code "${selection.selectedQRCode.name}" a été téléchargé.`,
     color: 'success',
     icon: 'i-heroicons-arrow-down-tray',
   })
@@ -145,7 +147,7 @@ const handleEditQRCode = async (formData: {
   content: string
   campaign_id: number | null
 }) => {
-  if (!selectedQR.value) return
+  if (!selection.selectedQRCode) return
 
   isEditing.value = true
   try {
@@ -158,20 +160,20 @@ const handleEditQRCode = async (formData: {
         content: formData.content,
         campaign_id: formData.campaign_id,
       })
-      .eq('id', selectedQR.value.id)
+      .eq('id', selection.selectedQRCode.id)
       .select()
 
     if (error) throw error
 
     const updatedQR = {
-      ...selectedQR.value,
+      ...selection.selectedQRCode,
       name: formData.name,
       type: formData.type,
       content: formData.content,
       campaign_id: formData.campaign_id,
     }
 
-    if (formData.content !== selectedQR.value.content) {
+    if (formData.content !== selection.selectedQRCode.content) {
       try {
         updatedQR.qr_code_image = await QRCode.toDataURL(formData.content, {
           width: 128,
@@ -182,7 +184,7 @@ const handleEditQRCode = async (formData: {
       }
     }
 
-    const index = qrcodesWithImages.value.findIndex((qr) => qr.id === selectedQR.value!.id)
+    const index = qrcodesWithImages.value.findIndex((qr) => qr.id === selection.selectedQRCode!.id)
     if (index !== -1) {
       qrcodesWithImages.value[index] = updatedQR
     }
@@ -195,7 +197,7 @@ const handleEditQRCode = async (formData: {
     })
 
     showEditModal.value = false
-    emit('edit', selectedQR.value.id)
+    emit('edit', selection.selectedQRCode.id)
   } catch (error) {
     console.error('Error updating QR code:', error)
     toast.add({
@@ -296,8 +298,8 @@ watch(() => props.qrcodes, generateQrCodeImages, { deep: true })
 
     <QRCodeShareModal
       :is-open="showShareModal"
-      :selected-q-r="selectedQR"
-      :qr-code-image="selectedQR?.qr_code_image || null"
+      :selected-q-r="selection.selectedQRCode"
+      :qr-code-image="selection.selectedQRCode?.qr_code_image || null"
       @update:is-open="showShareModal = $event"
       @copy-to-clipboard="copyToClipboard"
       @download-q-r-code="downloadQRCode"
@@ -305,7 +307,7 @@ watch(() => props.qrcodes, generateQrCodeImages, { deep: true })
 
     <QRCodeEditModal
       :is-open="showEditModal"
-      :selected-q-r="selectedQR"
+      :selected-q-r="selection.selectedQRCode"
       :campaigns="campaigns || []"
       :is-editing="isEditing"
       @update:is-open="showEditModal = $event"
@@ -314,7 +316,7 @@ watch(() => props.qrcodes, generateQrCodeImages, { deep: true })
 
     <QRCodeDeleteModal
       :is-open="showDeleteModal"
-      :selected-q-r="selectedQR"
+      :selected-q-r="selection.selectedQRCode"
       :is-deleting="isDeleting"
       @update:is-open="showDeleteModal = $event"
       @confirm-delete="confirmDeleteQRCode"
