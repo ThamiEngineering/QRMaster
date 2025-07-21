@@ -4,8 +4,8 @@
   "type": "module",
   "lint-staged": {
     "*.{js,ts,vue}": [
-      "eslint --fix",
-      "prettier --write"
+      "prettier --write",
+      "eslint --fix"
     ]
   },
   "scripts": {

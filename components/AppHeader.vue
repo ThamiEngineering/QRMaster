@@ -4,24 +4,34 @@
       <div class="flex justify-between items-center h-14">
         <div class="flex items-center space-x-3">
           <div class="flex items-center space-x-2">
-            <a href="#"
-              class="w-8 h-8 bg-blue-800 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors">
+            <a
+              href="#"
+              class="w-8 h-8 bg-blue-800 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors"
+            >
               <Icon name="mdi:facebook" class="w-4 h-4" />
             </a>
-            <a href="#"
-              class="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white hover:bg-gray-800 transition-colors">
+            <a
+              href="#"
+              class="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white hover:bg-gray-800 transition-colors"
+            >
               <Icon name="mdi:twitter" class="w-4 h-4" />
             </a>
-            <a href="#"
-              class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center text-white hover:bg-red-500 transition-colors">
+            <a
+              href="#"
+              class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center text-white hover:bg-red-500 transition-colors"
+            >
               <Icon name="mdi:youtube" class="w-4 h-4" />
             </a>
-            <a href="#"
-              class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+            <a
+              href="#"
+              class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-500 transition-colors"
+            >
               <Icon name="mdi:linkedin" class="w-4 h-4" />
             </a>
-            <a href="#"
-              class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white hover:bg-purple-500 transition-colors">
+            <a
+              href="#"
+              class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white hover:bg-purple-500 transition-colors"
+            >
               <Icon name="mdi:instagram" class="w-4 h-4" />
             </a>
           </div>
@@ -54,10 +64,18 @@
         </div>
 
         <div class="hidden lg:flex items-center space-x-8">
-          <a href="#" class="text-gray-800 hover:text-gray-900 font-medium transition-colors">Nous découvrir</a>
-          <a href="#" class="text-gray-800 hover:text-gray-900 font-medium transition-colors">Nos solutions</a>
-          <a href="#" class="text-gray-800 hover:text-gray-900 font-medium transition-colors">Nos tarifs</a>
-          <a href="#" class="text-gray-800 hover:text-gray-900 font-medium transition-colors">Support</a>
+          <a href="#" class="text-gray-800 hover:text-gray-900 font-medium transition-colors"
+            >Nous découvrir</a
+          >
+          <a href="#" class="text-gray-800 hover:text-gray-900 font-medium transition-colors"
+            >Nos solutions</a
+          >
+          <a href="#" class="text-gray-800 hover:text-gray-900 font-medium transition-colors"
+            >Nos tarifs</a
+          >
+          <a href="#" class="text-gray-800 hover:text-gray-900 font-medium transition-colors"
+            >Support</a
+          >
         </div>
       </div>
     </div>
