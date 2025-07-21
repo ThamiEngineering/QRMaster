@@ -1,61 +1,73 @@
 <script setup lang="ts">
-import type { Database } from '~/types/supabase';
+import type { Database } from '~/types/supabase'
 
 interface Props {
-    isOpen: boolean
-    selectedQR: Database['public']['Tables']['qrcodes']['Row'] | null
-    qrCodeImage: string | null
+  isOpen: boolean
+  selectedQR: Database['public']['Tables']['qrcodes']['Row'] | null
+  qrCodeImage: string | null
 }
 
 interface Emits {
-    (e: 'update:isOpen', value: boolean): void
-    (e: 'copyToClipboard', content: string): void
-    (e: 'downloadQRCode'): void
+  (e: 'update:isOpen', value: boolean): void
+  (e: 'copyToClipboard', content: string): void
+  (e: 'downloadQRCode'): void
 }
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const modalOpen = computed({
-    get: () => props.isOpen,
-    set: (value: boolean) => emit('update:isOpen', value)
+  get: () => props.isOpen,
+  set: (value: boolean) => emit('update:isOpen', value),
 })
 
 const handleCopyToClipboard = () => {
-    if (props.selectedQR?.id) {
-        const config = useRuntimeConfig()
-        const baseUrl = config.public.baseUrl || (process.client ? window.location.origin : 'https://qrmaster-ten.vercel.app')
-        const trackingUrl = `${baseUrl}/scan/${props.selectedQR.id}`
-        emit('copyToClipboard', trackingUrl)
-    }
+  if (props.selectedQR?.id) {
+    const config = useRuntimeConfig()
+    const baseUrl =
+      config.public.baseUrl ||
+      (import.meta.client ? window.location.origin : 'https://qrmaster-ten.vercel.app')
+    const trackingUrl = `${baseUrl}/scan/${props.selectedQR.id}`
+    emit('copyToClipboard', trackingUrl)
+  }
 }
 
 const handleDownload = () => {
-    emit('downloadQRCode')
+  emit('downloadQRCode')
 }
 </script>
 
 <template>
-    <UModal v-model:open="modalOpen" :ui="{ wrapper: 'z-50' }">
-        <template #header>
-            <div class="text-xl font-bold text-gray-900">Partager le QR code</div>
-        </template>
+  <UModal v-model:open="modalOpen" :ui="{ wrapper: 'z-50' }">
+    <template #header>
+      <div class="text-xl font-bold text-gray-900">Partager le QR code</div>
+    </template>
 
-        <template #body>
-            <div class="space-y-4">
-                <div v-if="selectedQR && qrCodeImage" class="flex justify-center">
-                    <img :src="qrCodeImage" alt="QR Code" class="w-48 h-48" />
-                </div>
-                <div class="space-y-2">
-                    <p class="text-sm text-gray-600">Partagez ce QR code via :</p>
-                    <div class="flex gap-2">
-                        <UButton color="primary" variant="soft" icon="i-heroicons-link" label="Copier le lien"
-                            @click="handleCopyToClipboard" />
-                        <UButton color="primary" variant="soft" icon="i-heroicons-arrow-down-tray" label="Télécharger"
-                            @click="handleDownload" />
-                    </div>
-                </div>
-            </div>
-        </template>
-    </UModal>
+    <template #body>
+      <div class="space-y-4">
+        <div v-if="selectedQR && qrCodeImage" class="flex justify-center">
+          <img :src="qrCodeImage" alt="QR Code" class="w-48 h-48" >
+        </div>
+        <div class="space-y-2">
+          <p class="text-sm text-gray-600">Partagez ce QR code via :</p>
+          <div class="flex gap-2">
+            <UButton
+              color="primary"
+              variant="soft"
+              icon="i-heroicons-link"
+              label="Copier le lien"
+              @click="handleCopyToClipboard"
+            />
+            <UButton
+              color="primary"
+              variant="soft"
+              icon="i-heroicons-arrow-down-tray"
+              label="Télécharger"
+              @click="handleDownload"
+            />
+          </div>
+        </div>
+      </div>
+    </template>
+  </UModal>
 </template>

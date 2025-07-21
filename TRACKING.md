@@ -7,11 +7,14 @@ Ce système de tracking permet de collecter des analytics détaillées sur l'uti
 ## 🏗️ Architecture
 
 ### 1. Génération avec Tracking
+
 - **Avant** : QR codes générés avec l'URL directe (ex: `https://facebook.com`)
 - **Maintenant** : QR codes générés avec URL de tracking (ex: `https://yourapp.com/scan/123`)
 
 ### 2. Base de données
+
 Table `qr_scans` qui enregistre :
+
 - `qrcode_id` : ID du QR code scanné
 - `campaign_id` : ID de la campagne associée
 - `scanned_at` : Timestamp du scan
@@ -31,14 +34,18 @@ QR Code scanné → /scan/[id] → Collecte données → Base de données → Re
 ## 📁 Structure des fichiers
 
 ### `/pages/scan/[id].vue`
+
 Route de tracking qui :
+
 - Récupère les infos du QR code
 - Collecte les données de tracking
 - Enregistre le scan en base
 - Redirige vers l'URL finale
 
 ### `/composables/useQRTracking.ts`
+
 Fonctions utilitaires :
+
 - `parseUserAgent()` : Détecte appareil et navigateur
 - `getLocationFromIP()` : Géolocalisation via IP
 - `recordScan()` : Enregistre un scan
@@ -46,13 +53,17 @@ Fonctions utilitaires :
 - `getGlobalAnalytics()` : Analytics globales
 
 ### `/utils/qrcode.ts`
+
 Utilitaires de génération :
+
 - `generateQRCodeWithTracking()` : Génère QR avec tracking
 - `getTrackingUrl()` : Crée l'URL de tracking
 - `copyTrackingUrlToClipboard()` : Copie URL tracking
 
 ### `/components/AnalyticsSection.vue`
+
 Interface analytics complète avec :
+
 - Métriques globales
 - Onglets par catégorie
 - Graphiques de tendance
@@ -69,7 +80,7 @@ const { generateQRCodeWithTracking } = useQRTracking()
 // Le QR code sera automatiquement généré avec l'URL de tracking
 const qrCodeImage = await generateQRCodeWithTracking(qrcodeId, {
   width: 256,
-  margin: 2
+  margin: 2,
 })
 </script>
 ```
@@ -88,6 +99,7 @@ const analytics = await getGlobalAnalytics(userId)
 ## 📊 Données collectées
 
 ### Automatiquement
+
 - **Timestamp** : Date/heure du scan
 - **Géolocalisation** : Pays et ville via IP
 - **Appareil** : Desktop/Mobile/Tablet
@@ -96,6 +108,7 @@ const analytics = await getGlobalAnalytics(userId)
 - **Referrer** : Site de provenance
 
 ### Calculées
+
 - **Visiteurs uniques** : Basé sur les IP
 - **Taux de conversion** : Unique visitors / Total scans
 - **Tendances** : Évolution dans le temps
@@ -116,15 +129,16 @@ NUXT_PUBLIC_BASE_URL=https://votre-domaine.com
 export default defineNuxtConfig({
   runtimeConfig: {
     public: {
-      baseUrl: process.env.NUXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    }
-  }
+      baseUrl: process.env.NUXT_PUBLIC_BASE_URL || 'http://localhost:3000',
+    },
+  },
 })
 ```
 
 ## 🎯 Fonctionnalités Analytics
 
 ### Vue d'ensemble
+
 - Total QR codes créés
 - Total scans
 - Visiteurs uniques
@@ -133,16 +147,19 @@ export default defineNuxtConfig({
 - Performance par campagne
 
 ### Appareils & Navigateurs
+
 - Répartition Desktop/Mobile/Tablet
 - Navigateurs les plus utilisés
 - Graphiques en barres avec pourcentages
 
 ### Géolocalisation
+
 - Top 10 des pays
 - Top 10 des villes
 - Pourcentages par localisation
 
 ### Activité récente
+
 - Liste des derniers scans
 - Détails par scan (pays, appareil, navigateur)
 - Timestamps formatés
@@ -150,16 +167,19 @@ export default defineNuxtConfig({
 ## 🔒 Sécurité & Performance
 
 ### Sécurité
+
 - Validation des IDs de QR code
 - Sanitization des données User-Agent
 - Rate limiting sur les scans (recommandé)
 
 ### Performance
+
 - Enregistrement async des scans
 - Cache des données analytics
 - Requêtes optimisées avec indexation
 
 ### Respect de la vie privée
+
 - Pas de stockage de données personnelles
 - IP hashées (optionnel)
 - Conformité RGPD
@@ -167,6 +187,7 @@ export default defineNuxtConfig({
 ## 🚀 Déploiement
 
 ### Variables à configurer en production
+
 ```bash
 NUXT_PUBLIC_BASE_URL=https://votre-domaine.com
 SUPABASE_URL=https://votre-projet.supabase.co
@@ -174,6 +195,7 @@ SUPABASE_ANON_KEY=votre-clé-publique
 ```
 
 ### Optimisations
+
 - CDN pour les images QR code
 - Cache Redis pour les analytics
 - Compression des données historiques
@@ -181,6 +203,7 @@ SUPABASE_ANON_KEY=votre-clé-publique
 ## 📈 Métriques disponibles
 
 ### Globales
+
 - `totalScans` : Nombre total de scans
 - `uniqueVisitors` : Visiteurs uniques
 - `topCountries` : Top pays
@@ -188,6 +211,7 @@ SUPABASE_ANON_KEY=votre-clé-publique
 - `scanTrend` : Tendance par date
 
 ### Par QR Code
+
 - `scansByCountry` : Scans par pays
 - `scansByDevice` : Scans par appareil
 - `recentScans` : Activité récente
@@ -196,11 +220,13 @@ SUPABASE_ANON_KEY=votre-clé-publique
 ## 🐛 Debug & Monitoring
 
 ### Logs
+
 - Erreurs de tracking dans la console
 - Métriques de performance
 - Alertes sur les échecs de géolocalisation
 
 ### Tests
+
 ```bash
 # Tester l'URL de tracking
 curl https://votre-domaine.com/scan/123
@@ -221,6 +247,7 @@ Pour migrer les QR codes existants vers le système de tracking :
 ## 📞 Support
 
 Pour toute question sur le système de tracking :
+
 - Consulter les logs d'erreur dans la console
 - Vérifier la configuration des variables d'environnement
-- Tester les URLs de tracking manuellement 
+- Tester les URLs de tracking manuellement
