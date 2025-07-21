@@ -74,191 +74,213 @@ const campaignDuration = computed(() => {
 </script>
 
 <template>
-    <UModal v-model:open="modalOpen" :ui="{ wrapper: 'z-50' }" class="max-w-4xl">
-        <template #header>
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                    <Icon name="heroicons:chart-bar" class="w-5 h-5 text-yellow-600" />
-                </div>
-                <div>
-                    <h2 class="text-xl font-bold text-gray-900">Analytics de la campagne</h2>
-                    <p class="text-sm text-gray-500">{{ selectedCampaign?.name }}</p>
-                </div>
+  <div v-if="modalOpen" class="fixed inset-0 z-[60] flex items-center justify-center p-4">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="modalOpen = false"></div>
+
+    <div class="relative w-full max-w-6xl max-h-[90vh] rounded-2xl overflow-hidden bg-black border border-white/20 shadow-2xl">
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-4 -right-4 w-32 h-32 bg-blue-400/10 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-4 -left-4 w-24 h-24 bg-blue-400/5 rounded-full blur-2xl"></div>
+      </div>
+
+      <div class="relative border-b border-white/10 p-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-blue-400/10 border border-blue-400/20 rounded-xl flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400">
+                <path d="M3 3v18h18"/>
+                <path d="m19 9-5 5-4-4-3 3"/>
+              </svg>
             </div>
-        </template>
+            <div>
+              <h2 class="text-2xl font-bold text-white tracking-tight">Analytics de la campagne</h2>
+              <p class="text-white/60 text-sm">{{ selectedCampaign?.name }}</p>
+            </div>
+          </div>
+          <button @click="modalOpen = false" class="w-10 h-10 rounded-xl flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18"/>
+              <path d="M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
 
-        <template #body>
-            <div v-if="selectedCampaign && campaignAnalytics" class="space-y-6">
-                <div class="bg-gray-50 rounded-lg p-4">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <p class="text-sm text-gray-600">Statut</p>
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                                :class="campaignStatus.color">
-                                {{ campaignStatus.text }}
-                            </span>
-                        </div>
-                        <div v-if="selectedCampaign.start_date">
-                            <p class="text-sm text-gray-600">Date de début</p>
-                            <p class="font-medium">{{ new Date(selectedCampaign.start_date).toLocaleDateString('fr-FR')
-                                }}</p>
-                        </div>
-                        <div v-if="selectedCampaign.end_date">
-                            <p class="text-sm text-gray-600">Date de fin</p>
-                            <p class="font-medium">{{ new Date(selectedCampaign.end_date).toLocaleDateString('fr-FR') }}
-                            </p>
-                        </div>
-                    </div>
-                    <div v-if="campaignDuration" class="mt-4">
-                        <p class="text-sm text-gray-600">Durée de la campagne</p>
-                        <p class="font-medium">{{ campaignDuration }} jours</p>
-                    </div>
-                    <div v-if="selectedCampaign.description" class="mt-4">
-                        <p class="text-sm text-gray-600">Description</p>
-                        <p class="text-gray-800">{{ selectedCampaign.description }}</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-white border border-gray-200 rounded-lg p-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <Icon name="heroicons:qr-code" class="w-5 h-5 text-blue-600" />
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-600">QR Codes</p>
-                                <p class="text-2xl font-bold text-gray-900">{{ campaignAnalytics.totalQRCodes }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white border border-gray-200 rounded-lg p-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                <Icon name="heroicons:chart-bar" class="w-5 h-5 text-green-600" />
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-600">Total Scans</p>
-                                <p class="text-2xl font-bold text-gray-900">{{ campaignAnalytics.totalScans }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white border border-gray-200 rounded-lg p-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                <Icon name="heroicons:arrow-trending-up" class="w-5 h-5 text-purple-600" />
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-600">Moyenne/QR</p>
-                                <p class="text-2xl font-bold text-gray-900">{{ campaignAnalytics.averageScansPerQR }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="bg-white border border-gray-200 rounded-lg p-4">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">QR Codes les plus scannés</h3>
-                        <div class="space-y-3">
-                            <div v-if="campaignAnalytics.topQRCodes.length > 0">
-                                <div v-for="qr in campaignAnalytics.topQRCodes" :key="qr.id"
-                                    class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                                            <Icon name="heroicons:qr-code" class="w-4 h-4 text-blue-600" />
-                                        </div>
-                                        <div>
-                                            <p class="font-medium text-gray-900">{{ qr.name }}</p>
-                                            <p class="text-sm text-gray-500">{{ qr.type }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="text-right">
-                                        <p class="font-semibold text-gray-900">{{ qr.scan_count || 0 }}</p>
-                                        <p class="text-sm text-gray-500">scans</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div v-else class="text-center py-6 text-gray-500">
-                                Aucun QR code dans cette campagne
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white border border-gray-200 rounded-lg p-4">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Répartition par type</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-4 h-4 bg-blue-500 rounded-full"></div>
-                                    <span class="text-sm font-medium">QR Codes Dynamiques</span>
-                                </div>
-                                <div class="text-right">
-                                    <p class="font-semibold text-gray-900">{{ campaignAnalytics.qrCodesByType.dynamique
-                                        }}</p>
-                                    <p class="text-sm text-gray-500">
-                                        {{ campaignAnalytics.totalQRCodes > 0 ?
-                                            Math.round((campaignAnalytics.qrCodesByType.dynamique /
-                                                campaignAnalytics.totalQRCodes) * 100) : 0 }}%
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-4 h-4 bg-purple-500 rounded-full"></div>
-                                    <span class="text-sm font-medium">QR Codes Statiques</span>
-                                </div>
-                                <div class="text-right">
-                                    <p class="font-semibold text-gray-900">{{ campaignAnalytics.qrCodesByType.statique
-                                        }}</p>
-                                    <p class="text-sm text-gray-500">
-                                        {{ campaignAnalytics.totalQRCodes > 0 ?
-                                            Math.round((campaignAnalytics.qrCodesByType.statique /
-                                                campaignAnalytics.totalQRCodes) * 100) : 0 }}%
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="w-full bg-gray-200 rounded-full h-2 mt-4">
-                                <div class="bg-blue-500 h-2 rounded-l-full" :style="{
-                                    width: campaignAnalytics.totalQRCodes > 0 ?
-                                        (campaignAnalytics.qrCodesByType.dynamique / campaignAnalytics.totalQRCodes) * 100 + '%' :
-                                        '0%'
-                                }"></div>
-                            </div>
-                        </div>
-
-                        <div class="mt-6 pt-6 border-t border-gray-200">
-                            <h4 class="text-sm font-medium text-gray-900 mb-3">Informations temporelles</h4>
-                            <div class="space-y-2 text-sm">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Campagne créée</span>
-                                    <span class="font-medium">{{ new
-                                        Date(selectedCampaign.created_at).toLocaleDateString('fr-FR') }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Dernière mise à jour</span>
-                                    <span class="font-medium">{{ new
-                                        Date(selectedCampaign.updated_at).toLocaleDateString('fr-FR') }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+      <!-- Body -->
+      <div class="relative p-6 overflow-y-auto max-h-[calc(90vh-220px)]" v-if="selectedCampaign && campaignAnalytics">
+        <div class="space-y-8">
+          <!-- Campaign Info -->
+          <div class="p-6 rounded-xl bg-gradient-to-r from-white/[0.03] via-white/[0.05] to-white/[0.03] backdrop-blur-md border border-white/10">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <p class="text-sm text-white/60 mb-1">Statut</p>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" :class="campaignStatus.color">
+                                    {{ campaignStatus.text }}
+                                </span>
+              </div>
+              <div v-if="selectedCampaign.start_date">
+                <p class="text-sm text-white/60 mb-1">Date de début</p>
+                <p class="font-semibold text-white">{{ new Date(selectedCampaign.start_date).toLocaleDateString('fr-FR') }}</p>
+              </div>
+              <div v-if="selectedCampaign.end_date">
+                <p class="text-sm text-white/60 mb-1">Date de fin</p>
+                <p class="font-semibold text-white">{{ new Date(selectedCampaign.end_date).toLocaleDateString('fr-FR') }}</p>
+              </div>
             </div>
 
-            <div v-else class="text-center py-8 text-gray-500">
-                <Icon name="heroicons:exclamation-triangle" class="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p>Impossible de charger les analytics de cette campagne</p>
+            <div v-if="campaignDuration" class="mt-6 pt-6 border-t border-white/10">
+              <p class="text-sm text-white/60 mb-1">Durée de la campagne</p>
+              <p class="font-semibold text-white">{{ campaignDuration }} jours</p>
             </div>
-        </template>
 
-        <template #footer>
-            <div class="flex justify-end">
-                <UButton color="neutral" variant="soft" label="Fermer" @click="modalOpen = false" />
+            <div v-if="selectedCampaign.description" class="mt-6 pt-6 border-t border-white/10">
+              <p class="text-sm text-white/60 mb-2">Description</p>
+              <p class="text-white/80">{{ selectedCampaign.description }}</p>
             </div>
-        </template>
-    </UModal>
+          </div>
+
+          <!-- Key Metrics -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="group relative p-6 rounded-xl overflow-hidden bg-gradient-to-br from-white/[0.03] via-white/[0.05] to-white/[0.03] backdrop-blur-md border border-white/10 hover:border-white/20 transition-all duration-300">
+              <div class="absolute inset-0 bg-gradient-to-br opacity-20 from-yellow-500/10 via-amber-500/10 to-orange-500/10"></div>
+              <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 -translate-x-full group-hover:translate-x-full transition-all duration-1000"></div>
+              <div class="relative">
+                <div class="flex items-center space-x-3 mb-4">
+                  <div class="w-12 h-12 bg-yellow-400/10 border border-yellow-400/20 rounded-xl flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400">
+                      <rect width="5" height="5" x="3" y="3" rx="1"/>
+                      <rect width="5" height="5" x="16" y="3" rx="1"/>
+                      <rect width="5" height="5" x="3" y="16" rx="1"/>
+                      <path d="m21 16-3.5-3.5-1 1-1.5-1.5"/>
+                      <path d="m21 21-3.5-3.5-1 1-1.5-1.5"/>
+                      <path d="M13 13l1.5 1.5L16 13"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-sm text-white/60">QR Codes</p>
+                    <p class="text-3xl font-bold text-white">{{ campaignAnalytics.totalQRCodes }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="group relative p-6 rounded-xl overflow-hidden bg-gradient-to-br from-white/[0.03] via-white/[0.05] to-white/[0.03] backdrop-blur-md border border-white/10 hover:border-white/20 transition-all duration-300">
+              <div class="absolute inset-0 bg-gradient-to-br opacity-20 from-green-500/10 via-emerald-500/10 to-teal-500/10"></div>
+              <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 -translate-x-full group-hover:translate-x-full transition-all duration-1000"></div>
+              <div class="relative">
+                <div class="flex items-center space-x-3 mb-4">
+                  <div class="w-12 h-12 bg-green-400/10 border border-green-400/20 rounded-xl flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-400">
+                      <path d="M3 3v18h18"/>
+                      <path d="m19 9-5 5-4-4-3 3"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-sm text-white/60">Total Scans</p>
+                    <p class="text-3xl font-bold text-white">{{ campaignAnalytics.totalScans }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="group relative p-6 rounded-xl overflow-hidden bg-gradient-to-br from-white/[0.03] via-white/[0.05] to-white/[0.03] backdrop-blur-md border border-white/10 hover:border-white/20 transition-all duration-300">
+              <div class="absolute inset-0 bg-gradient-to-br opacity-20 from-blue-500/10 via-indigo-500/10 to-purple-500/10"></div>
+              <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 -translate-x-full group-hover:translate-x-full transition-all duration-1000"></div>
+              <div class="relative">
+                <div class="flex items-center space-x-3 mb-4">
+                  <div class="w-12 h-12 bg-blue-400/10 border border-blue-400/20 rounded-xl flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <path d="m22 2-5 5"/>
+                      <path d="m17 7 5-5"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-sm text-white/60">Moyenne/QR Code</p>
+                    <p class="text-3xl font-bold text-white">{{ campaignAnalytics.averageScansPerQR }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- QR Code Types -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="p-6 rounded-xl bg-gradient-to-br from-white/[0.03] via-white/[0.05] to-white/[0.03] backdrop-blur-md border border-white/10">
+              <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-3">
+                <div class="w-8 h-8 bg-purple-400/10 border border-purple-400/20 rounded-lg flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-400">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    <circle cx="12" cy="12" r="4"/>
+                  </svg>
+                </div>
+                Répartition par type
+              </h3>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-3 h-3 bg-blue-400 rounded-full"></div>
+                    <span class="text-white/80">Dynamique</span>
+                  </div>
+                  <span class="text-white font-semibold">{{ campaignAnalytics.qrCodesByType.dynamique }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                    <span class="text-white/80">Statique</span>
+                  </div>
+                  <span class="text-white font-semibold">{{ campaignAnalytics.qrCodesByType.statique }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Top QR Codes -->
+            <div class="p-6 rounded-xl bg-gradient-to-br from-white/[0.03] via-white/[0.05] to-white/[0.03] backdrop-blur-md border border-white/10">
+              <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-3">
+                <div class="w-8 h-8 bg-yellow-400/10 border border-yellow-400/20 rounded-lg flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                </div>
+                Top QR Codes
+              </h3>
+              <div class="space-y-3">
+                <div v-for="(qr, index) in campaignAnalytics.topQRCodes" :key="qr.id" class="flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                  <div class="flex items-center gap-3">
+                    <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" :class="{
+                                            'bg-yellow-400 text-black': index === 0,
+                                            'bg-gray-300 text-black': index === 1,
+                                            'bg-amber-600 text-white': index === 2,
+                                            'bg-white/20 text-white': index > 2
+                                        }">
+                      {{ index + 1 }}
+                    </div>
+                    <div>
+                      <p class="text-white/90 text-sm font-medium truncate max-w-[120px]">{{ qr.name }}</p>
+                      <p class="text-white/50 text-xs">{{ qr.type }}</p>
+                    </div>
+                  </div>
+                  <span class="text-white font-semibold">{{ qr.scan_count || 0 }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="relative border-t border-white/10 p-6">
+        <div class="flex justify-end">
+          <button @click="modalOpen = false"
+                  class="relative h-12 px-6 group overflow-hidden bg-gradient-to-br from-white/[0.03] via-white/[0.05] to-white/[0.03] backdrop-blur-md border border-white/10 rounded-xl text-white/90 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+            <div
+                class="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 -translate-x-full group-hover:translate-x-full transition-all duration-1000"></div>
+            <span class="relative font-medium">Fermer</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
