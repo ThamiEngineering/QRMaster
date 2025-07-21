@@ -29,9 +29,7 @@ useHead({
     </div>
 
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div
-        class="absolute top-1/4 left-1/4 w-2 h-2 bg-yellow-400/30 rounded-full animate-pulse"
-      />
+      <div class="absolute top-1/4 left-1/4 w-2 h-2 bg-yellow-400/30 rounded-full animate-pulse" />
       <div
         class="absolute top-1/3 right-1/3 w-1 h-1 bg-yellow-400/20 rounded-full animate-ping"
         style="animation-delay: 1s"
@@ -55,7 +53,7 @@ useHead({
             aria-label="QRMaster Homepage"
           >
             <div class="relative w-8 h-8">
-              <div class="absolute inset-0 bg-yellow-400/20 rounded-xl blur-sm"/>
+              <div class="absolute inset-0 bg-yellow-400/20 rounded-xl blur-sm" />
               <div
                 class="relative w-full h-full rounded-xl bg-black border border-yellow-400/20 flex items-center justify-center"
               >
@@ -192,9 +190,7 @@ useHead({
                 <span class="hero-line hero-line-3">
                   <span class="text-yellow-400 relative">
                     <span class="relative z-10">DES ENTREPRENEURS</span>
-                    <div
-                      class="absolute inset-0 bg-yellow-400/10 blur-3xl -z-10 animate-pulse"
-                    />
+                    <div class="absolute inset-0 bg-yellow-400/10 blur-3xl -z-10 animate-pulse" />
                   </span>
                 </span>
               </h1>

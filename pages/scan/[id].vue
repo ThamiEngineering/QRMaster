@@ -83,7 +83,7 @@ useHead({
         <p class="text-gray-600">Vous allez être redirigé vers votre destination.</p>
 
         <div class="w-full bg-gray-200 rounded-full h-2">
-          <div class="bg-blue-600 h-2 rounded-full animate-pulse" style="width: 70%"/>
+          <div class="bg-blue-600 h-2 rounded-full animate-pulse" style="width: 70%" />
         </div>
       </div>
 

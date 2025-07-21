@@ -383,9 +383,7 @@ watch(activeSection, (newSection, oldSection) => {
     </div>
 
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div
-        class="absolute top-1/4 left-1/4 w-2 h-2 bg-yellow-400/30 rounded-full animate-pulse"
-      />
+      <div class="absolute top-1/4 left-1/4 w-2 h-2 bg-yellow-400/30 rounded-full animate-pulse" />
       <div
         class="absolute top-1/3 right-1/3 w-1 h-1 bg-yellow-400/20 rounded-full animate-ping"
         style="animation-delay: 1s"
@@ -406,7 +404,7 @@ watch(activeSection, (newSection, oldSection) => {
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-3">
               <div class="relative w-10 h-10">
-                <div class="absolute inset-0 bg-yellow-400/20 rounded-xl blur-sm"/>
+                <div class="absolute inset-0 bg-yellow-400/20 rounded-xl blur-sm" />
                 <div
                   class="relative w-full h-full rounded-xl bg-black border border-yellow-400/20 flex items-center justify-center"
                 >
@@ -689,10 +687,26 @@ watch(activeSection, (newSection, oldSection) => {
             </button>
 
             <button
-                class="w-full flex items-center space-x-3 mt-4 px-4 py-3 rounded-xl text-white/70 hover:text-blue-400 hover:bg-blue-500/10 border border-transparent hover:border-blue-500/20 transition-all duration-300 group"
-                @click="activeSection = 'help'"
+              class="w-full flex items-center space-x-3 mt-4 px-4 py-3 rounded-xl text-white/70 hover:text-blue-400 hover:bg-blue-500/10 border border-transparent hover:border-blue-500/20 transition-all duration-300 group"
+              @click="activeSection = 'help'"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"
+                />
+                <path d="M9 18h6"/>
+                <path d="M10 22h4"/>
+              </svg>
               <span class="font-medium">Besoin d'aide ?</span>
             </button>
 
