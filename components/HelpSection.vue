@@ -77,7 +77,7 @@ const guides = [
   {
     title: 'Guide de démarrage rapide',
     description: 'Apprenez les bases de QRMaster en 5 minutes',
-    icon: 'i-heroicons-rocket-launch',
+    icon: 'i-heroicons-play',
     color: 'blue',
   },
   {
@@ -99,6 +99,12 @@ const guides = [
     color: 'purple',
   },
 ]
+
+const selectedFAQ = ref<number | null>(null)
+
+function toggleFAQ(id: number) {
+  selectedFAQ.value = selectedFAQ.value === id ? null : id
+}
 </script>
 
 <template>
@@ -319,7 +325,7 @@ const guides = [
                   <svg
                     :class="[
                       'w-5 h-5 text-white/60 transition-transform duration-200',
-                      openFAQ === index ? 'rotate-180' : '',
+                      selectedFAQ === index ? 'rotate-180' : '',
                     ]"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -334,7 +340,7 @@ const guides = [
                 </div>
               </button>
               <div
-                v-if="openFAQ === index"
+                v-if="selectedFAQ === index"
                 class="mt-2 p-4 rounded-xl bg-white/[0.02] border border-white/5"
               >
                 <p class="text-white/80 leading-relaxed">{{ item.answer }}</p>

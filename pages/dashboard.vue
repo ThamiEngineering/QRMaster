@@ -8,6 +8,7 @@ import HelpSection from '~/components/HelpSection.vue'
 import CampaignCreateModal from '~/components/Modal/CampaignCreateModal.vue'
 import QRCodeGenerateModal from '~/components/Modal/QRCodeGenerateModal.vue'
 import ProfilSection from '~/components/ProfilSection.vue'
+import { useUserProfileStore } from '~/stores/userProfile'
 import type { Database } from '~/types/supabase'
 
 definePageMeta({
@@ -36,7 +37,7 @@ const generatedQRCode = ref<string | null>(null)
 const isCreatingQRCode = ref(false)
 const isCreatingCampaign = ref(false)
 const showCreateCampaignModal = ref(false)
-const userProfile = ref<Database['public']['Tables']['profiles']['Row'] | null>(null)
+const userProfileStore = useUserProfileStore()
 
 async function handleCreateQRCode(qrData: {
   name: string
@@ -165,26 +166,26 @@ async function fetchUserProfile() {
       .single()
 
     if (error) {
-      userProfile.value = {
+      userProfileStore.setProfile({
         id: user.value.id,
         first_name: user.value.user_metadata?.first_name || '',
         last_name: user.value.user_metadata?.last_name || '',
         company_name: user.value.user_metadata?.company_name || '',
         created_at: new Date().toISOString(),
-      }
+      })
     } else {
-      userProfile.value = data
+      userProfileStore.setProfile(data)
     }
   } catch (error) {
     console.error('Error fetching user profile:', error)
     if (user.value) {
-      userProfile.value = {
+      userProfileStore.setProfile({
         id: user.value.id,
         first_name: user.value.user_metadata?.first_name || '',
         last_name: user.value.user_metadata?.last_name || '',
         company_name: user.value.user_metadata?.company_name || '',
         created_at: new Date().toISOString(),
-      }
+      })
     }
   }
 }
@@ -677,10 +678,10 @@ watch(activeSection, (newSection, oldSection) => {
                 </div>
                 <div class="flex-1 text-left">
                   <p class="text-sm font-medium">
-                    {{ userProfile?.first_name || user.user_metadata?.first_name || 'Utilisateur' }}
+                    {{ userProfileStore.profile?.first_name || user.user_metadata?.first_name || 'Utilisateur' }}
                   </p>
                   <p class="text-xs text-white/50">
-                    {{ userProfile?.company_name || 'Mon profil' }}
+                    {{ userProfileStore.profile?.company_name || 'Mon profil' }}
                   </p>
                 </div>
               </div>
@@ -759,7 +760,7 @@ watch(activeSection, (newSection, oldSection) => {
 
               <h1 class="text-4xl font-bold text-white mb-4 tracking-tight">
                 Bienvenue
-                {{ userProfile?.first_name || user.user_metadata?.first_name || 'utilisateur' }}
+                {{ userProfileStore.profile?.first_name || user.user_metadata?.first_name || 'utilisateur' }}
               </h1>
               <p class="text-xl text-white/60 leading-relaxed">
                 Découvrez le meilleur de QRMaster avec des outils de nouvelle génération

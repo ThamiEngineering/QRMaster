@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import AccountDeleteModal from '~/components/Modal/AccountDeleteModal.vue'
+import { useUserProfileStore } from '~/stores/userProfile'
 import type { Database } from '~/types/supabase'
 
 const supabase = useSupabaseClient()
@@ -21,6 +22,8 @@ const isSaving = ref(false)
 const isDeleting = ref(false)
 const showDeleteModal = ref(false)
 const isOfflineMode = ref(false)
+
+const userProfileStore = useUserProfileStore()
 
 async function fetchProfile() {
   if (!user.value) return
@@ -43,6 +46,7 @@ async function fetchProfile() {
           company_name: user.value.user_metadata?.company_name || '',
           created_at: new Date().toISOString(),
         }
+        userProfileStore.setProfile(profile.value)
         updateEditedProfile()
 
         toast.add({
@@ -60,6 +64,7 @@ async function fetchProfile() {
           company_name: user.value.user_metadata?.company_name || '',
           created_at: new Date().toISOString(),
         }
+        userProfileStore.setProfile(profile.value)
         updateEditedProfile()
 
         toast.add({
@@ -70,6 +75,7 @@ async function fetchProfile() {
       }
     } else {
       profile.value = data
+      userProfileStore.setProfile(data)
       updateEditedProfile()
     }
   } catch (error) {
@@ -83,6 +89,7 @@ async function fetchProfile() {
         company_name: user.value.user_metadata?.company_name || '',
         created_at: new Date().toISOString(),
       }
+      userProfileStore.setProfile(profile.value)
       updateEditedProfile()
 
       toast.add({
@@ -162,6 +169,7 @@ async function saveProfile() {
           last_name: editedProfile.value.last_name.trim(),
           company_name: editedProfile.value.company_name.trim(),
         }
+        userProfileStore.setProfile(profile.value)
         isEditing.value = false
 
         toast.add({
@@ -173,10 +181,12 @@ async function saveProfile() {
       }
 
       profile.value = insertData
+      userProfileStore.setProfile(insertData)
     } else if (error) {
       throw error
     } else {
       profile.value = data
+      userProfileStore.setProfile(data)
     }
 
     isEditing.value = false
@@ -197,6 +207,7 @@ async function saveProfile() {
       company_name: editedProfile.value.company_name.trim() || null,
       created_at: profile.value?.created_at ?? new Date().toISOString(),
     }
+    userProfileStore.setProfile(profile.value)
     isEditing.value = false
 
     toast.add({
