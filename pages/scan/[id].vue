@@ -38,9 +38,26 @@ const handleScan = async () => {
       console.warn('Could not get IP address:', ipError)
     }
 
-    recordScan(qrcodeId, userAgent, ipAddress, referrer).catch((error) =>
-      console.error('Error recording scan:', error)
-    )
+    // Utiliser l'API dédiée avec logs côté serveur
+    try {
+      console.log('🌐 [SCAN] Appel API track-scan...')
+      const apiResponse = await $fetch('/api/track-scan', {
+        method: 'POST',
+        body: {
+          qrcodeId,
+          userAgent,
+          ipAddress,
+          referrer
+        }
+      })
+      console.log('✅ [SCAN] API Response:', apiResponse)
+    } catch (apiError) {
+      console.error('❌ [SCAN] Erreur API:', apiError)
+      // Fallback vers l'ancienne méthode si l'API échoue
+      recordScan(qrcodeId, userAgent, ipAddress, referrer).catch((error) =>
+        console.error('Error recording scan:', error)
+      )
+    }
 
     if (qrcodeData.content) {
       setTimeout(() => {
