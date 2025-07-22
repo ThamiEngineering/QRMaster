@@ -154,8 +154,6 @@ export const useQRTracking = () => {
         .eq('id', qrcodeId)
         .single()
 
-      console.log('💾 [RECORD_SCAN] Insertion du scan...')
-      
       const { data, error } = await supabase
         .from('qr_scans')
         .insert({
@@ -173,24 +171,14 @@ export const useQRTracking = () => {
         .select()
         .single()
 
-      if (error) {
-        console.error('❌ [RECORD_SCAN] Erreur lors de l\'insertion du scan:', error)
-        throw error
-      }
-      
-      console.log('✅ [RECORD_SCAN] Scan inséré avec succès:', data)
+      if (error) throw error
 
-      // SÉPARÉMENT : Incrémenter le compteur (ne pas faire échouer si ça rate)
       try {
-        console.log('🔢 [RECORD_SCAN] Tentative d\'incrémentation du compteur...')
-        
         const { error: countError } = await supabase.rpc('increment_scan_count', {
-          qrcode_id_param: qrcodeId
+          qrcode_id_param: qrcodeId,
         })
 
         if (countError) {
-          console.error('❌ [RECORD_SCAN] Erreur RPC, fallback vers UPDATE:', countError)
-          // Fallback vers l'ancienne méthode
           const { data: currentQR } = await supabase
             .from('qrcodes')
             .select('scan_count')
@@ -202,18 +190,14 @@ export const useQRTracking = () => {
               .from('qrcodes')
               .update({ scan_count: (currentQR.scan_count || 0) + 1 })
               .eq('id', qrcodeId)
-            console.log('✅ [RECORD_SCAN] Compteur mis à jour via UPDATE fallback')
           }
-        } else {
-          console.log('✅ [RECORD_SCAN] Compteur incrémenté via RPC')
         }
       } catch (counterError) {
-        console.error('❌ [RECORD_SCAN] Erreur compteur (non-bloquante):', counterError)
+        // Silently fail on counter increment
       }
 
       return { data, error }
     } catch (error) {
-      console.error('Error recording scan:', error)
       return { data: null, error }
     }
   }

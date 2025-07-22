@@ -32,6 +32,7 @@ export default defineNuxtConfig({
         process.env.SUPABASE_ANON_KEY ||
         process.env.SUPABASE_KEY,
       baseUrl: process.env.NUXT_PUBLIC_BASE_URL || 'http://localhost:3000',
+      debugPassword: process.env.NUXT_PUBLIC_DEBUG_PASSWORD || 'admin',
     },
   },
 

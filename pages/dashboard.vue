@@ -438,6 +438,44 @@ watch(activeSection, (newSection, oldSection) => {
 
             <div class="flex items-center gap-4">
               <button
+                class="relative h-10 px-6 group overflow-hidden bg-gradient-to-br from-blue-400/20 via-blue-500/20 to-indigo-500/20 backdrop-blur-md border border-blue-400/30 rounded-xl text-blue-400 hover:text-blue-300 hover:bg-blue-400/30 hover:border-blue-400/40 transition-all duration-300"
+                title="Synchroniser les données"
+                :disabled="loadingQRCodes || loadingCampaigns"
+                @click="
+                  () => {
+                    fetchQrCodes()
+                    fetchCampaigns()
+                  }
+                "
+              >
+                <div
+                  class="absolute inset-0 bg-gradient-to-r from-transparent via-blue-400/10 to-transparent opacity-0 group-hover:opacity-100 -translate-x-full group-hover:translate-x-full transition-all duration-1000"
+                />
+                <div class="relative flex items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    :class="{ 'animate-spin': loadingQRCodes || loadingCampaigns }"
+                  >
+                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                    <path d="M21 3v5h-5" />
+                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                    <path d="M8 16H3v5" />
+                  </svg>
+                  <span class="text-sm font-medium hidden sm:inline">
+                    {{ loadingQRCodes || loadingCampaigns ? 'Sync...' : 'Synchroniser' }}
+                  </span>
+                </div>
+              </button>
+
+              <button
                 class="relative h-10 px-6 group overflow-hidden bg-gradient-to-br from-white/[0.03] via-white/[0.05] to-white/[0.03] backdrop-blur-md border border-white/10 rounded-xl text-white/90 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300"
                 @click="showCreateCampaignModal = true"
               >
