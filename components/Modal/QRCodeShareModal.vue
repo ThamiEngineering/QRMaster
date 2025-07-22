@@ -48,12 +48,8 @@ const handleDownload = () => {
       class="relative w-full max-w-lg rounded-2xl overflow-hidden bg-black border border-white/20 shadow-2xl"
     >
       <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          class="absolute -top-4 -right-4 w-32 h-32 bg-indigo-400/10 rounded-full blur-3xl"
-        />
-        <div
-          class="absolute -bottom-4 -left-4 w-24 h-24 bg-indigo-400/5 rounded-full blur-2xl"
-        />
+        <div class="absolute -top-4 -right-4 w-32 h-32 bg-indigo-400/10 rounded-full blur-3xl" />
+        <div class="absolute -bottom-4 -left-4 w-24 h-24 bg-indigo-400/5 rounded-full blur-2xl" />
       </div>
 
       <div class="relative border-b border-white/10 p-6">

@@ -73,8 +73,8 @@ const handleCancel = () => {
     >
       <!-- Background Effects -->
       <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute -top-4 -right-4 w-32 h-32 bg-blue-400/10 rounded-full blur-3xl"/>
-        <div class="absolute -bottom-4 -left-4 w-24 h-24 bg-blue-400/5 rounded-full blur-2xl"/>
+        <div class="absolute -top-4 -right-4 w-32 h-32 bg-blue-400/10 rounded-full blur-3xl" />
+        <div class="absolute -bottom-4 -left-4 w-24 h-24 bg-blue-400/5 rounded-full blur-2xl" />
       </div>
 
       <!-- Header -->

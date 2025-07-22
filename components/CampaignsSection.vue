@@ -254,9 +254,7 @@ const openAnalyticsModal = (campaign: Database['public']['Tables']['campaigns'][
             <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
           </svg>
         </div>
-        <div
-          class="absolute -top-2 -right-2 w-6 h-6 bg-green-400/20 rounded-full animate-pulse"
-        />
+        <div class="absolute -top-2 -right-2 w-6 h-6 bg-green-400/20 rounded-full animate-pulse" />
       </div>
       <h3 class="text-2xl font-bold text-white mb-4">Aucune campagne créée</h3>
       <p class="text-white/60 mb-8 text-center max-w-md">
@@ -423,7 +421,7 @@ const openAnalyticsModal = (campaign: Database['public']['Tables']['campaigns'][
                   </p>
                   <p class="text-xs text-white/50">Total scans</p>
                 </div>
-                <div class="w-px h-10 bg-white/10"/>
+                <div class="w-px h-10 bg-white/10" />
                 <div class="text-center">
                   <p class="text-2xl font-bold text-white">
                     {{
@@ -434,7 +432,7 @@ const openAnalyticsModal = (campaign: Database['public']['Tables']['campaigns'][
                   </p>
                   <p class="text-xs text-white/50">QR dynamiques</p>
                 </div>
-                <div class="w-px h-10 bg-white/10"/>
+                <div class="w-px h-10 bg-white/10" />
                 <div class="text-center">
                   <p class="text-2xl font-bold text-white">
                     {{

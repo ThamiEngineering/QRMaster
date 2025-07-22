@@ -678,7 +678,11 @@ watch(activeSection, (newSection, oldSection) => {
                 </div>
                 <div class="flex-1 text-left">
                   <p class="text-sm font-medium">
-                    {{ userProfileStore.profile?.first_name || user.user_metadata?.first_name || 'Utilisateur' }}
+                    {{
+                      userProfileStore.profile?.first_name ||
+                      user.user_metadata?.first_name ||
+                      'Utilisateur'
+                    }}
                   </p>
                   <p class="text-xs text-white/50">
                     {{ userProfileStore.profile?.company_name || 'Mon profil' }}
@@ -705,8 +709,8 @@ watch(activeSection, (newSection, oldSection) => {
                 <path
                   d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"
                 />
-                <path d="M9 18h6"/>
-                <path d="M10 22h4"/>
+                <path d="M9 18h6" />
+                <path d="M10 22h4" />
               </svg>
               <span class="font-medium">Besoin d'aide ?</span>
             </button>
@@ -760,7 +764,11 @@ watch(activeSection, (newSection, oldSection) => {
 
               <h1 class="text-4xl font-bold text-white mb-4 tracking-tight">
                 Bienvenue
-                {{ userProfileStore.profile?.first_name || user.user_metadata?.first_name || 'utilisateur' }}
+                {{
+                  userProfileStore.profile?.first_name ||
+                  user.user_metadata?.first_name ||
+                  'utilisateur'
+                }}
               </h1>
               <p class="text-xl text-white/60 leading-relaxed">
                 Découvrez le meilleur de QRMaster avec des outils de nouvelle génération
